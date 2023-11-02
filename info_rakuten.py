@@ -18,6 +18,7 @@ html = 'index.html'
 def root():
     return render_template(html)
     
+os.getenv('PYTHON_PIP_VERSION')
 
 @app.route('/search_product', methods=['post'])
 def search():
