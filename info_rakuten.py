@@ -1,6 +1,6 @@
 import os, requests, sys
 # 
-from flask import Flask, render_template, request, Response
+from flask import Flask, render_template, request
 # 環境変数を使用する際に必須
 from dotenv import load_dotenv
 from time import sleep
