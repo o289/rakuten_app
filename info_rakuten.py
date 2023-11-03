@@ -1,24 +1,22 @@
-import os, requests, sys
+import os, requests, json
 # 
 from flask import Flask, render_template, request
+
 # 環境変数を使用する際に必須
 from dotenv import load_dotenv
-from time import sleep
+from time import sleep as sl
 from bs4 import BeautifulSoup
 
 
 
 app = Flask(__name__)
 
-# 共通で使う変数
-html = 'index.html'
-
+root_html = 'index.html'
 
 @app.route('/')
 def root():
-    return render_template(html)
+    return render_template(root_html)
     
-os.getenv('PYTHON_PIP_VERSION')
 
 @app.route('/search_product', methods=['post'])
 def search():
@@ -53,6 +51,11 @@ def search():
         get_shop = rf['get_shop']
     else:
         get_shop = '0'
+    
+    if 'get_shop_code' in rf:
+        get_shop_code = rf['get_shop_code']
+    else:
+        get_shop_code = '0'
     
     if 'get_caption' in rf:
         get_caption = rf['get_caption']
@@ -97,19 +100,19 @@ def search():
     # 楽天APIにリクエストするためのパラメーター
     app_id = os.environ['RAKUTEN_APPLICATION_ID']
     affiliate_id = os.environ['RAKUTEN_AFFILIATE_ID']
-    status = int(sys.stdin.readline())
+    
     keyword = product_search
 
     params = {
         "applicationId": app_id, 
         "affiliateId": affiliate_id,
         "hits": want_product_length_search,
-        "carrier": status,
         "keyword": keyword,
         "page": 1,
         "maxPrice": max_price_search,
         "minPrice": min_price_search,
         "sort": product_sort,
+        "imageFlag": 1,
         "postageFlag": postage_sort,
         "purchaseType": purchase_type
         
@@ -121,21 +124,30 @@ def search():
     if not items:
         result = "<h2>商品がありません</h2>"
     else:
-        result = "<div>"
+        result = "<div class='grid-container'>"
         count = 1
         for i in items:
             item = i['Item']
 
             # 商品URL
             url = item['itemUrl']
-            
-            result += f"<table><h2>商品No.{count}</h2>"
+            # 画像
+            images = item['mediumImageUrls']
+            image = images[0]
+            img = image.get('imageUrl')
+            print(img)
 
-            # 商品名
+
+            product_num = f'商品No.{count}'
             
+            result += f"<div class='grid-item'><table><h2>{product_num}</h2>"
+            result += f"<img src='{img}' alt='{product_num}' class='image'>"
+            # 商品名 
             name = item['itemName']
-            result += f"<tr><th>商品名</th><td class='text-left'><a href='{url}'>{name}</a></td></tr>"
+            result += f"<tr><th>商品名</th><td class='text-left'><a href='{url}'><p class='text-container-mini'>{name}</p></a></td></tr>"
             
+
+
             # 価格
             price = item['itemPrice']
             result += f"<tr><th>価格</th><td>{price}円</td></tr>"
@@ -166,10 +178,16 @@ def search():
             if get_code == '1':
                 code = item['itemCode']
                 result += f"<tr><th>商品コード</th><td>{code}</td></tr>"
-            # ショップ名
+            # 販売店
             if get_shop == '1':
                 shop = item['shopName']
                 result += f"<tr><th>販売店</th><td>{shop}</td></tr>"
+
+            # 販売店コード
+            if get_shop_code == '1':
+                shop_code = item['shopCode']
+                result += f"<tr><th>販売店コード</th><td>{shop_code}</td></tr>"
+
             # 送料
             if get_postage == '1':
                 # There is a if postage.
@@ -250,12 +268,12 @@ def search():
             # 商品説明
             if get_caption == '1':
                 caption = item['itemCaption']
-                result += f"<tr><th>商品説明</th><td class='text-left'>{caption}</td></tr>"
+                result += f"<tr><th>商品説明</th><td><p class='text-left text-container'>{caption}</p></td></tr>"
 
-            result += "</table>"
+            result += "</table></div>"
             count += 1
 
-            sleep(1)
+            sl(1)
         
         result += "<div>"
 
@@ -263,16 +281,16 @@ def search():
         result = soup.prettify()
         
 
-    return render_template('result.html', result=result,)
+    return render_template('result.html', result=result)
     
 
 @app.route('/search')
 def search_again():
-    return render_template(html)
+    return render_template(root_html)
 
 
 
 
 
 if __name__ =='__main__':
-    app.run(port=2013, debug=True)
+    app.run(port=9000, debug=True)

@@ -6,15 +6,22 @@
     <title>検索結果</title>
 </head>
 <body>
+    
+    {{result | safe }}
+
 
     <form action="/" method="get" class="research">
         <input type="submit" value="再検索" class="submit btn--radius">
     </form>
 
-    {{result | safe }}
-    
-
     <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        body{
+            overflow-x: hidden;
+        }
         table{
             width: 85%;
             margin: 0 auto;
@@ -46,6 +53,8 @@
             text-align: center;
             background-color: #eee;
             padding: 10px 0;
+            max-height: 500px;
+            overflow-y: auto;
         }
 
         a{
@@ -55,9 +64,27 @@
         h2{
             text-align: center;
             font-size: 24px;
+            padding: 6% 0;
         }
 
-
+        .image{
+            display: block;
+            width: 40%;
+            max-width: 500px;
+            height: 200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .text-container-mini{
+            height: 150px; /* 最大の高さを設定 */
+            overflow: auto;/* 高さを超えた場合にスクロールバーを表示 */
+            box-sizing: border-box;
+        }
+        .text-container{
+            height: 500px; /* 最大の高さを設定 */
+            overflow: auto;/* 高さを超えた場合にスクロールバーを表示 */
+            box-sizing: border-box;
+        }
         .text-left{
             text-align: left;
         }
@@ -68,31 +95,54 @@
             text-align: center;
         }
         .submit{
-            width: 50%;
+            width: 30%;
+            min-width: 128px;
             height: 64px;
-            margin: 0 auto;
-            text-align: center;
             color: #000;
+            color: #fff;
+            background-color: #eb6100;
+            margin: 7% auto;
             border-radius: 50%;
         }
-        .submit{
-        color: #fff;
-        background-color: #eb6100;
-        }
         .submit:hover{
-        color: #fff;
-        background: #f56500;
+            color: #fff;
+            background: #f56500;
         }
 
         .submit.btn--radius {
-        border-radius: 100vh;
+            border-radius: 100vh;
+        }
+        /* レイアウト */
+        .grid-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .grid-item {
+            flex-basis: calc(33.33% - 20px); /* パソコンサイズのときは3枚 */
+            margin: 20px 10px;
+            
+        }
+
+        @media (max-width: 1024px) {
+            .grid-item {
+                flex-basis: calc(50% - 20px); /* タブレットサイズのときは2枚 */
+                margin: 10px;
+            }
         }
 
         @media (max-width: 768px) {
+            .grid-item {
+                flex-basis: calc(100% - 20px); /* スマートフォンサイズのときは1枚 */
+            }
+        }        
+
+        /* @media (max-width: 768px) {
             table{
                 width: 95%;
             }
-        }
+        } */
     </style>
 </body>
 </html>
