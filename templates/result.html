@@ -19,44 +19,13 @@
             margin: 0;
             padding: 0;
         }
+        :root{
+            --maincolor: #f380aa;
+            --mainhovercolor: #de0051;
+        }
         body{
             overflow-x: hidden;
         }
-        table{
-            width: 85%;
-            margin: 0 auto;
-            padding-top: 10px;
-            border-collapse: collapse;  
-        }
-
-        table tr{
-            border-bottom: solid 2px white;
-        }
-
-        table tr:last-child{
-            border-bottom: none;
-        }
-
-        table th{
-            position: relative;
-            width: 10%;
-            background-color: rgb(209, 0, 0);
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-        }
-
-        
-        table td{
-            width: 90%;
-            margin: 0 auto;
-            text-align: center;
-            background-color: #eee;
-            padding: 10px 0;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-
         a{
             color: #000;
             text-decoration: none;
@@ -66,29 +35,62 @@
             font-size: 24px;
             padding: 6% 0;
         }
+        table{
+            border-collapse: collapse;
+            width: 80%;
+            margin: 0 auto;
+        }
+        .tb01 th,
+        .tb01 td{
+            padding: 10px;
+            border: solid 1px #ccc;
+            text-align:center;
+            box-sizing:border-box;
+        }
+        .tb01 th {
+            background: var(--maincolor);
+            width: 10%;
+            color: #fff;
+        }
+        .tb01 td {
+            width: 90%;
+            background-color: #eeeeee;
+        }
+
+        @media screen and (max-width: 768px) {
+        .tb01 {
+            width: 90%;
+            margin: 0 auto;
+        }
+        table.tb01 th,
+        table.tb01 td {
+            display: block;
+            width: 100%;
+            border-bottom:none;
+        }
+        .tb01 tr:last-child{
+            border-bottom: solid 1px #ccc;
+        }
+
+        }
+
+        
 
         .image{
             display: block;
-            width: 40%;
-            max-width: 500px;
-            height: 200px;
+            width: 30%;
             margin: 0 auto;
             text-align: center;
         }
-        .text-container-mini{
-            height: 150px; /* 最大の高さを設定 */
-            overflow: auto;/* 高さを超えた場合にスクロールバーを表示 */
-            box-sizing: border-box;
-        }
-        .text-container{
-            height: 500px; /* 最大の高さを設定 */
-            overflow: auto;/* 高さを超えた場合にスクロールバーを表示 */
-            box-sizing: border-box;
-        }
-        .text-left{
+        
+        .text-left,
+        .long-sentence{
             text-align: left;
         }
-        
+        .long-sentence{
+            max-height: 500px;
+            overflow-y: auto;
+        }
         .research{
             width: 50%;
             margin: 0  auto;
@@ -100,49 +102,19 @@
             height: 64px;
             color: #000;
             color: #fff;
-            background-color: #eb6100;
+            background-color: var(--maincolor);
             margin: 7% auto;
             border-radius: 50%;
         }
         .submit:hover{
             color: #fff;
-            background: #f56500;
+            background: var(--mainhovercolor);
         }
 
         .submit.btn--radius {
             border-radius: 100vh;
         }
-        /* レイアウト */
-        .grid-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-        }
-
-        .grid-item {
-            flex-basis: calc(33.33% - 20px); /* パソコンサイズのときは3枚 */
-            margin: 20px 10px;
-            
-        }
-
-        @media (max-width: 1024px) {
-            .grid-item {
-                flex-basis: calc(50% - 20px); /* タブレットサイズのときは2枚 */
-                margin: 10px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .grid-item {
-                flex-basis: calc(100% - 20px); /* スマートフォンサイズのときは1枚 */
-            }
-        }        
-
-        /* @media (max-width: 768px) {
-            table{
-                width: 95%;
-            }
-        } */
+        
     </style>
 </body>
 </html>

@@ -140,11 +140,11 @@ def search():
 
             product_num = f'商品No.{count}'
             
-            result += f"<div class='grid-item'><table><h2>{product_num}</h2>"
+            result += f"<table class='tb01'><h2>{product_num}</h2>"
             result += f"<img src='{img}' alt='{product_num}' class='image'>"
             # 商品名 
             name = item['itemName']
-            result += f"<tr><th>商品名</th><td class='text-left'><a href='{url}'><p class='text-container-mini'>{name}</p></a></td></tr>"
+            result += f"<tr><th>商品名</th><td class='text-left'><a href='{url}'>{name}</a></td></tr>"
             
 
 
@@ -251,7 +251,7 @@ def search():
                 else:
                     ValueError('Invalid value.')
 
-                result += f"<tr><th>クレジットカード</th><td>{credit_card}</td></tr>"
+                result += f"<tr><th>カード</th><td>{credit_card}</td></tr>"
 
             # ギフト包装
             if get_gift_flag == '1':
@@ -268,9 +268,9 @@ def search():
             # 商品説明
             if get_caption == '1':
                 caption = item['itemCaption']
-                result += f"<tr><th>商品説明</th><td><p class='text-left text-container'>{caption}</p></td></tr>"
+                result += f"<tr><th>商品説明</th><td class='text-left text-container'><p class='long-sentence'>{caption}</p></td></tr>"
 
-            result += "</table></div>"
+            result += "</table>"
             count += 1
 
             sl(1)
