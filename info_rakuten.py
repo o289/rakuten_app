@@ -272,8 +272,6 @@ def search():
 
             result += "</table>"
             count += 1
-
-            sl(1)
         
         result += "<div>"
 
