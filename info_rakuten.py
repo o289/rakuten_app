@@ -333,8 +333,3 @@ def game_search():
     
     return render_template(result_html, result=items)    
 
-
-
-
-if __name__ =='__main__':
-    app.run(port=9000, debug=True)
