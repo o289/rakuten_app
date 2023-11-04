@@ -12,14 +12,24 @@ from bs4 import BeautifulSoup
 app = Flask(__name__)
 
 root_html = 'index.html'
+product_html = 'product.html'
+result_html = 'result.html'
+
 
 @app.route('/')
 def root():
     return render_template(root_html)
     
+# 商品検索画面
+@app.route('/product', methods=['get'])
+def product():
+    return render_template(product_html)
 
+
+
+# 商品検索
 @app.route('/search_product', methods=['post'])
-def search():
+def product_search():
     url = 'https://app.rakuten.co.jp/services/api/IchibaItem/Search/20220601'
 
     load_dotenv()
@@ -272,14 +282,15 @@ def search():
 
             result += "</table>"
             count += 1
-        
-        result += "<div>"
 
+            sl(1)
+
+        result += "<form action='/product' method='get' class='research'><input type='submit' value='再検索' class='submit btn--radius'></form>"
         soup = BeautifulSoup(result, 'html.parser')
         result = soup.prettify()
         
 
-    return render_template('result.html', result=result)
+    return render_template(result_html, result=result)
     
 
 @app.route('/search')
