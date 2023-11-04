@@ -301,10 +301,37 @@ def product_search():
     return render_template(result_html, result=result)
     
 
-@app.route('/search')
-def search_again():
-    return render_template(root_html)
+# ゲームの検索
+@app.route('/search_game', methods=['post'])
+def game_search():
+    url = 'https://app.rakuten.co.jp/services/api/BooksGame/Search/20170404'
+    load_dotenv()
 
+    app_id = os.environ['RAKUTEN_APPLICATION_ID']
+    affiliate_id = os.environ['RAKUTEN_AFFILIATE_ID']
+
+    rf = request.form
+    game_search = rf['game']
+    want_game_length_search = int(rf['want_game'])
+    availability_game_search = int(rf['availability_game'])
+    game_sort = rf['game_sort']
+
+    params = {
+        "applicationId": app_id,
+        "affiliateId": affiliate_id,
+        "title": game_search,
+        "sort": game_sort,
+        "availability": availability_game_search,
+        "hits": want_game_length_search,
+        "page": 1,
+
+    } 
+
+    res = requests.get(url, params=params).json()
+    items = res['Items']
+
+    
+    return render_template(result_html, result=items)    
 
 
 

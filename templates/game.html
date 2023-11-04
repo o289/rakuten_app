@@ -10,7 +10,50 @@
     {% extends "nav.html" %}
 
     {% block content %}
-        <h1>ゲームページ</h1>   
+        <form action="/search_game" method="post" class="d-block w-75 mx-auto">
+            <div class="form-group">
+                <label for="text">ゲーム(入力必須)</label>
+                <input type="text" name="game" id="text" class="form-control" placeholder="探したいゲームを入力してください"  required >
+            </div>
+            
+            <div class="form-group">
+                <label for="want">取得ゲーム数</label>
+                <select class="form-control" id="want" name="want_game">
+                    <option value="1" selected >1件</option>
+                    <option value="5">5件</option>
+                    <option value="10">10件</option>
+                    <option value="15">15件</option>
+                    <option value="20">20件</option>
+                    <option value="30">30件</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="availability">在庫状況</label>
+                <select class="form-control" id="availability" name="availability_game">
+                    <option value="0" selected >全て</option>
+                    <option value="1">在庫あり</option>
+                    <option value="2">通常3～7日程度で発送</option>
+                    <option value="3">通常3～9日程度で発送</option>
+                    <option value="5">予約受付中</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="exampleFormControlSelect1">ソート</label>
+                <select class="form-control" id="exampleFormControlSelect1" name="game_sort">
+                    <option value="standard" selected>デフォルト</option>
+                    <option value="-itemPrice">値段が高い順</option>
+                    <option value="+itemPrice">値段が安い順</option>
+                    <option value="-releaseDate">発売日順</option>
+                    <option value="sales">売れている順</option>
+                    <option value="reviewCount">レビュー件数が多い順</option>
+                    <option value="reviewAverage">レビュー評価が高い順</option>
+                </select>
+            </div>
+
+            <input type="submit" value="検索" class="btn btn-danger mt-4">
+        </form>   
     {% endblock %}
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
