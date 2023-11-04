@@ -332,4 +332,3 @@ def game_search():
 
     
     return render_template(result_html, result=items)    
-
