@@ -13,6 +13,7 @@ app = Flask(__name__)
 
 root_html = 'index.html'
 product_html = 'product.html'
+game_html = 'game.html'
 result_html = 'result.html'
 
 
@@ -24,6 +25,13 @@ def root():
 @app.route('/product', methods=['get'])
 def product():
     return render_template(product_html)
+# ゲーム検索画面
+@app.route('/game', methods=['get'])
+def game():
+    return render_template(game_html)
+
+
+
 
 
 
