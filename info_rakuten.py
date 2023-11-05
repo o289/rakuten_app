@@ -1,4 +1,4 @@
-import os, requests, json
+import os, requests
 # 
 from flask import Flask, render_template, request
 
@@ -11,11 +11,19 @@ from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
+# HTML
 root_html = 'index.html'
 product_html = 'product.html'
 game_html = 'game.html'
 result_html = 'result.html'
 
+# class
+
+#環境変数 
+load_dotenv()
+
+app_id = os.environ['RAKUTEN_APPLICATION_ID']
+affiliate_id = os.environ['RAKUTEN_AFFILIATE_ID']
 
 @app.route('/')
 def root():
@@ -40,8 +48,6 @@ def game():
 def product_search():
     url = 'https://app.rakuten.co.jp/services/api/IchibaItem/Search/20220601'
 
-    load_dotenv()
-
     # 検索パラメーター
     rf = request.form
     product_search = rf['product']
@@ -50,77 +56,27 @@ def product_search():
     min_price_search = int(rf['min_price'])
     product_sort = rf['product_sort']
     postage_sort = int(rf['postage'])
+    
     purchase_type = int(rf['purchase_type'])
     if purchase_type >= 3:
         ValueError('Invalid value.')
 
     # 表示する情報（チェックボックス）
-    if 'get_code' in rf:
-        get_code = rf['get_code']
-    else:
-        get_code = '0'
+    get_code = rf.get('get_code', '0')
+    get_tax = rf.get('get_tax', '0')
+    get_shop = rf.get('get_shop', '0')
+    get_shop_code = rf.get('get_shop_code', '0')
+    get_caption = rf.get('get_caption', '0')
+    get_postage = rf.get('get_postage', '0')
+    get_asuraku = rf.get('get_asuraku', '0')
+    get_overseas = rf.get('get_overseas', '0')
+    get_credit_card = rf.get('get_credit_card', '0')
+    get_review_count = rf.get('get_review_count', '0')
+    get_review_average = rf.get('get_review_average', '0')
+    get_gift_flag = rf.get('get_gift_flag', '0')
     
-    if 'get_tax' in rf:
-        get_tax = rf['get_tax']
-    else:
-        get_tax = '0'
-    
-    if 'get_shop' in rf:
-        get_shop = rf['get_shop']
-    else:
-        get_shop = '0'
-    
-    if 'get_shop_code' in rf:
-        get_shop_code = rf['get_shop_code']
-    else:
-        get_shop_code = '0'
-    
-    if 'get_caption' in rf:
-        get_caption = rf['get_caption']
-    else:
-        get_caption = '0'
-    
-    if 'get_postage' in rf:
-        get_postage = rf['get_postage']
-    else:
-        get_postage = '0'
-    
-    if 'get_asuraku' in rf:
-        get_asuraku = rf['get_asuraku']
-    else:
-        get_asuraku = '0'
-
-    if 'get_overseas' in rf:
-        get_overseas = rf['get_overseas']
-    else:
-        get_overseas = '0'
-    
-    if 'get_credit_card' in rf:
-        get_credit_card = rf['get_credit_card']
-    else:
-        get_credit_card = '0'
-    
-    if 'get_review_count' in rf:
-        get_review_count = rf['get_review_count']
-    else:
-        get_review_count = '0'
-    
-    if 'get_review_average' in rf:
-        get_review_average = rf['get_review_average']
-    else:
-        get_review_average = '0'
-
-    if 'get_gift_flag' in rf:
-        get_gift_flag = rf['get_gift_flag']
-    else:
-        get_gift_flag = '0'
-
     # 楽天APIにリクエストするためのパラメーター
-    app_id = os.environ['RAKUTEN_APPLICATION_ID']
-    affiliate_id = os.environ['RAKUTEN_AFFILIATE_ID']
-    
     keyword = product_search
-
     params = {
         "applicationId": app_id, 
         "affiliateId": affiliate_id,
@@ -153,8 +109,6 @@ def product_search():
             images = item['mediumImageUrls']
             image = images[0]
             img = image.get('imageUrl')
-            print(img)
-
 
             product_num = f'商品No.{count}'
             
@@ -305,16 +259,28 @@ def product_search():
 @app.route('/search_game', methods=['post'])
 def game_search():
     url = 'https://app.rakuten.co.jp/services/api/BooksGame/Search/20170404'
-    load_dotenv()
-
-    app_id = os.environ['RAKUTEN_APPLICATION_ID']
-    affiliate_id = os.environ['RAKUTEN_AFFILIATE_ID']
+    
 
     rf = request.form
+    # 入力パラメーター
     game_search = rf['game']
     want_game_length_search = int(rf['want_game'])
     availability_game_search = int(rf['availability_game'])
     game_sort = rf['game_sort']
+    game_title_display_type = int(rf['game_title_display_type'])
+    
+    # 欲しい情報
+    get_item_caption = rf.get('get_item_caption', '0')
+    get_hardware = rf.get('get_hardware', '0')
+    get_jan_code = rf.get('get_jan_code', '0')
+    get_sales_date = rf.get('get_sales_date', '0')
+    get_availability = rf.get('get_availability', '0')
+    get_postage = rf.get('get_postage', '0')
+    get_limited = rf.get('get_limited', '0')
+    get_label = rf.get('get_label', '0')
+    get_maker_code = rf.get('get_maker_code', '0')
+    get_review_count = rf.get('get_review_count', '0')
+    get_review_average = rf.get('get_review_average', '0')
 
     params = {
         "applicationId": app_id,
@@ -324,11 +290,144 @@ def game_search():
         "availability": availability_game_search,
         "hits": want_game_length_search,
         "page": 1,
-
     } 
 
     res = requests.get(url, params=params).json()
     items = res['Items']
-
+    count = 1
     
-    return render_template(result_html, result=items)    
+    if not items:
+        result = "<h2>商品がありません</h2>"
+    else:
+        result = "<div class='grid-container'>"
+        for i in items:
+            item = i['Item']
+            # length of items.
+            product_num = f'商品No.{count}'
+
+            # 画像
+            img = item['smallImageUrl']
+            
+            # URL
+            url = item['affiliateUrl']
+
+            result += f"<table class='tb01'><h2>{product_num}</h2>"
+            result += f"<img src='{img}' alt='{product_num}' class='image'>"
+            
+            # ゲームタイトル（通常）と（カタカナ）
+            template_of_game = '<th>タイトル</th>'
+            if game_title_display_type == 0:
+                game_title = item['title']
+                
+            elif game_title_display_type == 1:
+                game_title = item['titleKana']
+            else:
+                ValueError("This value is nothing.")
+            result += f"<tr>{template_of_game}<td><a href='{url}'>{game_title}</a></td></tr>"
+
+            # 価格
+            price = item['itemPrice']
+            result += f"<tr><th>価格</th><td>{price}円</td></tr>"
+            
+            # ハード
+            if get_hardware == '1':
+                hardware = item['hardware']
+                result += f"<tr><th>対応機種</th><td>{hardware}</td></tr>"
+
+            # JANコード
+            if get_jan_code == '1':
+                jan_code = item['jan']
+                result += f"<tr><th>JANコード</th><td>{jan_code}</td></tr>"
+            
+            # 発売日
+            if get_sales_date == '1':
+                sales_date = item['salesDate']
+                result += f"<tr><th>発売日</th><td>{sales_date}</td></tr>"
+            # 
+            if get_limited == '1':
+                limited_type = item['limitedFlag']
+                if limited_type == 0:
+                    limited = '通常販売'
+                elif limited_type == 1:
+                    limited = '限定販売'
+                else: 
+                    ValueError('This value is nothing.')
+                result += f"<tr><th>発売種別</th><td>{limited}</td></tr>"
+            # 在庫状況
+            if get_availability == '1':
+                availability_type = int(item['availability'])
+                
+                if availability_type == 1:
+                    availability = '在庫あり'
+                elif availability_type == 2:
+                    availability = '通常3～7日程度で発送'
+                elif availability_type == 3:
+                    availability = '通常3～9日程度で発送'
+                elif availability_type == 4:
+                    availability = 'メーカー取り寄せ'
+                elif availability_type == 5:
+                    availability = '予約受付中'
+                elif availability_type == 6:
+                    availability = 'メーカーに在庫確認'
+                else:
+                    ValueError('This value is nothing.')
+                result += f"<tr><th>在庫状況</th><td>{availability}</td></tr>"
+
+            # 送料
+            if get_postage == '1':
+                # There is a if postage.
+                postage_flag = item['postageFlag']
+                if postage_flag == 0:
+                    postage = "送料込/送料無料"
+                elif postage_flag == 1:
+                    postage = "宅配送料無料"
+                elif postage_flag == 2:
+                    postage = "完全送料無料"
+                else: 
+                    ValueError('Invalid value.')
+                result += f"<tr><th>送料</th><td>{postage}</td></tr>"
+            
+            # レビュー数
+            if get_review_count == '1':
+                review_count = item['reviewCount']
+                result += f"<tr><th>レビュー数</th><td>{review_count}件</td></tr>"
+
+            # レビュー平均点数
+            if get_review_average == '1':
+                review_average = item['reviewAverage']
+                result += f"<tr><th>レビュー平均</th><td>{review_average}点</td></tr>"
+            
+            # 販売元
+            if get_label == '1':
+                label = item['label']
+                result += f"<tr><th>販売元</th><td>{label}</td></tr>"
+            
+            # 販売店コード
+            if get_maker_code == '1':
+                maker_code = item['makerCode']
+                result += f"<tr><th>販売店コード</th><td>{maker_code}</td></tr>"
+            
+            # 商品説明
+            if get_item_caption == '1':
+                caption = item['itemCaption']
+                result += f"<tr><th>商品説明</th><td class='text-left text-container'><p class='long-sentence'>{caption}</p></td></tr>"
+
+
+            result += "</table>"
+            count += 1
+
+    result += "<form action='/game' method='get' class='research'><input type='submit' value='再検索' class='submit btn--radius'></form>"
+    soup = BeautifulSoup(result, 'html.parser')
+    result = soup.prettify()
+    
+    return render_template(result_html, result=result)    
+
+
+
+
+
+
+
+
+
+

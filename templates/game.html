@@ -4,7 +4,7 @@
     <form action="/search_game" method="post" class="d-block w-75 mx-auto">
         <div class="form-group">
             <label for="text">ゲーム(入力必須)</label>
-            <input type="text" name="game" id="text" class="form-control" placeholder="探したいゲームを入力してください"  required >
+            <input type="text" name="game" id="text" class="form-control" placeholder="探したいゲームを入力してください"  required>
         </div>
         
         <div class="form-group">
@@ -41,6 +41,63 @@
                 <option value="reviewCount">レビュー件数が多い順</option>
                 <option value="reviewAverage">レビュー評価が高い順</option>
             </select>
+        </div>
+
+        <div class="form-group">
+            <label for="exampleFormControlSelect1">商品名表記</label>
+            <select class="form-control" id="exampleFormControlSelect1" name="game_title_display_type">
+                <option value="0" selected>通常</option>
+                <option value="1">カタカナ</option>
+            </select>
+        </div>
+
+        <div>
+            <h4>欲しい情報を選択</h4>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="get_item_caption" id="inlineRadio8" value="1">
+                <label class="form-check-label" for="inlineRadio8">商品説明</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="get_hardware" id="inlineRadio4" value="1">
+                <label class="form-check-label" for="inlineRadio4">対応機種</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="get_jan_code" id="inlineRadio2" value="1">
+                <label class="form-check-label" for="inlineRadio2">JANコード</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="get_sales_date" id="inlineRadio1" value="1">
+                <label class="form-check-label" for="inlineRadio1">発売日</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="get_availability" id="inlineRadio6" value="1">
+                <label class="form-check-label" for="inlineRadio6">在庫状況</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="get_postage" id="inlineRadio5" value="1">
+                <label class="form-check-label" for="inlineRadio5">送料</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="get_review_count" id="inlineRadio9" value="1">
+                <label class="form-check-label" for="inlineRadio9">レビュー件数</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="get_review_average" id="inlineRadio10" value="1">
+                <label class="form-check-label" for="inlineRadio10">レビュー平均</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="get_limited" id="inlineRadio7" value="1">
+                <label class="form-check-label" for="inlineRadio7">販売タイプ</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="get_label" id="inlineRadio3" value="1">
+                <label class="form-check-label" for="inlineRadio3">販売店</label>
+            </div>  
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="get_maker_code" id="inlineRadio12" value="1">
+                <label class="form-check-label" for="inlineRadio12">販売店コード</label>
+            </div>  
+            
         </div>
 
         <input type="submit" value="検索" class="btn btn-danger mt-4">
