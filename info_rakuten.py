@@ -105,15 +105,10 @@ def product_search():
 
             # 商品URL
             url = item['itemUrl']
-            # 画像
-            images = item['mediumImageUrls']
-            image = images[0]
-            img = image.get('imageUrl')
-
+            
             product_num = f'商品No.{count}'
             
             result += f"<table class='tb01'><h2>{product_num}</h2>"
-            result += f"<img src='{img}' alt='{product_num}' class='image'>"
             # 商品名 
             name = item['itemName']
             result += f"<tr><th>商品名</th><td class='text-left'><a href='{url}'>{name}</a></td></tr>"
@@ -305,14 +300,12 @@ def game_search():
             # length of items.
             product_num = f'商品No.{count}'
 
-            # 画像
-            img = item['smallImageUrl']
+
             
             # URL
             url = item['affiliateUrl']
 
             result += f"<table class='tb01'><h2>{product_num}</h2>"
-            result += f"<img src='{img}' alt='{product_num}' class='image'>"
             
             # ゲームタイトル（通常）と（カタカナ）
             template_of_game = '<th>タイトル</th>'
