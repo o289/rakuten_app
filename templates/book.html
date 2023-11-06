@@ -1,0 +1,114 @@
+{% extends "nav.html" %} 
+
+{% block content %}
+<form action="/search_book" method="post" class="d-block w-75 mx-auto">
+    <h2 class="text-center">どちらか1つは入力してください</h2>
+    <div class="form-row">
+        <div class="col-4">
+            <div class="form-group">
+                <label for="book_name">書籍名</label>
+                <input type="text" name="book_name" id="book_name" class="form-control" placeholder="書籍名を入力してください">
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="form-group">
+                <label for="author_name">著者名</label>
+                <input type="text" name="author_name" id="author_name" class="form-control" placeholder="著者名を入力してください">
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="form-group">
+                <label for="publisher_name">出版社名</label>
+                <input type="text" name="publisher_name" id="publisher_name" class="form-control" placeholder="出版社名を入力してください">
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="form-group">
+        <label for="exampleFormControlSelect1">書籍タイプ</label>
+        <select class="form-control" id="exampleFormControlSelect1" name="book_type">
+            <option value="1" selected>単行本</option>
+            <option value="2">文庫</option>
+            <option value="3">新書</option>
+            <option value="4">全集・双書</option>
+            <option value="5">事・辞典</option>
+            <option value="6">図鑑</option>
+            <option value="7">絵本</option>
+            <option value="9">コミック</option>
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label for="want">取得件数数</label>
+        <select class="form-control" id="want" name="want_book">
+            <option value="1" selected >1件</option>
+            <option value="5">5件</option>
+            <option value="10">10件</option>
+            <option value="15">15件</option>
+            <option value="20">20件</option>
+            <option value="30">30件</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="exampleFormControlSelect1">ソート</label>
+        <select class="form-control" id="exampleFormControlSelect1" name="book_sort">
+            <option value="standard" selected>デフォルト</option>
+            <option value="-itemPrice">値段が高い順</option>
+            <option value="+itemPrice">値段が安い順</option>
+            <option value="-releaseDate">発売日順(新しい)</option>
+            <option value="+releaseDate">発売日順(古い)</option>
+            <option value="sales">売れている順</option>
+            <option value="reviewCount">レビュー件数が多い順</option>
+            <option value="reviewAverage">レビュー評価が高い順</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="availability">在庫状況</label>
+        <select class="form-control" id="availability" name="availability_book">
+            <option value="0" selected >全て</option>
+            <option value="1">在庫あり</option>
+            <option value="2">通常3～7日程度で発送</option>
+            <option value="3">通常3～9日程度で発送</option>
+            <option value="5">予約受付中</option>
+        </select>
+    </div>
+
+    <div>
+        <h4>欲しい情報を選択</h4>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="get_book_caption" id="inlineRadio8" value="1">
+            <label class="form-check-label" for="inlineRadio8">商品説明</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="get_postage" id="inlineRadio5" value="1">
+            <label class="form-check-label" for="inlineRadio5">送料</label>
+        </div>
+        
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="get_isbn_code" id="inlineRadio2" value="1">
+            <label class="form-check-label" for="inlineRadio2">ISBNコード</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="get_book_availability" id="inlineRadio6" value="1">
+            <label class="form-check-label" for="inlineRadio6">在庫状況</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="get_book_sales_date" id="inlineRadio1" value="1">
+            <label class="form-check-label" for="inlineRadio1">発売日</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="get_book_review_count" id="inlineRadio9" value="1">
+            <label class="form-check-label" for="inlineRadio9">レビュー件数</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="get_book_review_average" id="inlineRadio10" value="1">
+            <label class="form-check-label" for="inlineRadio10">レビュー平均</label>
+        </div>
+    </div>
+
+    <input type="submit" value="検索" class="btn btn-danger mt-4">
+</form>
+{% endblock %}
