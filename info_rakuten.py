@@ -7,8 +7,6 @@ from dotenv import load_dotenv
 from time import sleep as sl
 from bs4 import BeautifulSoup
 
-
-
 app = Flask(__name__)
 
 # HTML
@@ -16,6 +14,7 @@ root_html = 'index.html'
 product_html = 'product.html'
 game_html = 'game.html'
 book_html = 'book.html'
+hotel_html = 'hotel.html'
 result_html = 'result.html'
 
 # class
@@ -26,24 +25,49 @@ load_dotenv()
 app_id = os.environ['RAKUTEN_APPLICATION_ID']
 affiliate_id = os.environ['RAKUTEN_AFFILIATE_ID']
 
+# 検索に関するHTML
 @app.route('/')
 def root():
     return render_template(root_html)
+
 # 商品検索画面
 @app.route('/product', methods=['get'])
 def product():
     return render_template(product_html)
+
 # ゲーム検索画面
 @app.route('/game', methods=['get'])
 def game():
     return render_template(game_html)
+
 # 書籍検索画面
 @app.route('/book', methods=['get'])
 def book():
     return render_template(book_html)
 
+# ホテル検索画面
+# @app.route('/hotel', methods=['get'])
+# def hotel():
+#     return render_template(hotel_html)
+
+# 
 
 
+
+# カラムを作成する This is creating columns of search result.
+def create_columns(title, body, sentence_type: int):
+    # 普通
+    if sentence_type == 0:
+        columns = f"<tr><th>{title}</th><td>{body}</td></tr>"
+    # まあまあ長い文章
+    elif sentence_type == 1:
+        columns = f"<tr><th>{title}</th><td class='text-left'>{body}</td></tr>"
+    # 長い文章
+    elif sentence_type == 2:
+        columns = f"<tr><th>{title}</th><td class='text-left text-container'><p class='long-sentence'>{body}</p></td></tr>"
+    else:
+        raise ValueError('You must set 0, 1 or 2 in sentence_type.')
+    return columns
 
 
 
@@ -51,9 +75,9 @@ def book():
 @app.route('/search_product', methods=['post'])
 def product_search():
     url = 'https://app.rakuten.co.jp/services/api/IchibaItem/Search/20220601'
-
-    # 検索パラメーター
     rf = request.form
+    
+    # 検索パラメーター  
     product_search = rf['product']
     want_product_length_search = int(rf['want_product'])
     max_price_search = int(rf['max_price'])
@@ -115,13 +139,12 @@ def product_search():
             result += f"<table class='tb01'><h2>{product_num}</h2>"
             # 商品名 
             name = item['itemName']
-            result += f"<tr><th>商品名</th><td class='text-left'><a href='{url}'>{name}</a></td></tr>"
+            result += create_columns(title='商品名', body=name, sentence_type=1)
             
-
 
             # 価格
             price = item['itemPrice']
-            result += f"<tr><th>価格</th><td>{price}円</td></tr>"
+            result += create_columns(title='価格', body=price, sentence_type=0)
             
             # 税
             if get_tax == '1':
@@ -133,31 +156,32 @@ def product_search():
                     tax = "税別価格"
                 else: 
                     raise ValueError('Invalid value.')
-                result += f"<tr><th>税</th><td>{tax}</td></tr>"
-
+                result += create_columns(title='税', body=tax, sentence_type=0)
+                
             # レビュー数
             if get_review_count == '1':
                 review_count = item['reviewCount']
-                result += f"<tr><th>レビュー数</th><td>{review_count}件</td></tr>"
+                result += create_columns(title='レビュー数', body=f'{review_count}件',sentence_type=0)
 
             # レビュー平均点数
             if get_review_average == '1':
                 review_average = item['reviewAverage']
-                result += f"<tr><th>レビュー平均</th><td>{review_average}点</td></tr>"
+                result += create_columns(title='レビュー平均', body=f'{review_average}点', sentence_type=0)
 
             # 商品コード
             if get_code == '1':
                 code = item['itemCode']
-                result += f"<tr><th>商品コード</th><td>{code}</td></tr>"
+                result += create_columns(title='商品コード', body=code, sentence_type=0)
+            
             # 販売店
             if get_shop == '1':
                 shop = item['shopName']
-                result += f"<tr><th>販売店</th><td>{shop}</td></tr>"
+                result += create_columns(title='販売店', body=shop, sentence_type=0)
 
             # 販売店コード
             if get_shop_code == '1':
                 shop_code = item['shopCode']
-                result += f"<tr><th>販売店コード</th><td>{shop_code}</td></tr>"
+                result += create_columns(title='販売店コード', body=shop_code, sentence_type=0)
 
             # 送料
             if get_postage == '1':
@@ -169,27 +193,26 @@ def product_search():
                     postage = "送料別"
                 else: 
                     raise ValueError('Invalid value.')
-                result += f"<tr><th>送料</th><td>{postage}</td></tr>"
-
+                result += create_columns(title='送料', body=postage, sentence_type=0)
+                
             # 翌日配送
             if get_asuraku == '1':
                 # There is a if asuraku.
                 asuraku_flag = item['asurakuFlag']
                 if asuraku_flag == 0:
                     asuraku = '不可'
-                    result += f"<tr><th>翌日配送</th><td>{asuraku}</td></tr>"
+                    result += create_columns(title='翌日配送', body=asuraku, sentence_type=0)
 
                 elif asuraku_flag == 1:
                     asuraku = '可'
                     asuraku_area = item['asurakuArea']
                     asuraku_closing_time = item['asurakuClosingTime']
                     asuraku_area = asuraku_area.replace('/', '|')
-                    asuraku_data = f"<td class='text-left'>{asuraku_area}</td>"
-
-                    result += f"<tr><th>翌日配送</th><td>{asuraku}</td></tr>"
-                    result += f"<tr><th>翌日配送可能地域</th>{asuraku_data}</tr>"
-                    result += f"<tr><th>翌日発送締め切り</th><td>{asuraku_closing_time}</td/tr>"
-
+                    
+                    result += create_columns(title='翌日配送', body=asuraku, sentence_type=0)
+                    result += create_columns(title='翌日配送可能地域', body=asuraku_area, sentence_type=1)
+                    result += create_columns(title='翌日配送締切日', body=asuraku_closing_time, sentence_type=0)
+                    
                 else:
                     raise ValueError('Invalid value.')
 
@@ -198,17 +221,16 @@ def product_search():
                 ship_overseas_flag = item['shipOverseasFlag']
                 if ship_overseas_flag == 0:
                     ship_overseas = '不可'
-                    result += f"<tr><th>海外配送</th><td>{ship_overseas}</td></tr>"
-                
+                    result += create_columns(title='海外配送', body=ship_overseas, sentence_type=0)
+                    
                 elif ship_overseas_flag == 1:
                     ship_overseas = '可'
                     ship_overseas_area = item['shipOverseasArea']
                     ship_overseas_area = ship_overseas_area.replace('/', '|')
-                    ship_overseas_data = f"<td class='text-left'>{ship_overseas_area}</td>"
                     
-                    result += f"<tr><th>海外配送</th><td>{ship_overseas}</td></tr>"
-                    result += f"<tr><th>海外配送可能地域</th>{ship_overseas_data}</tr>"
-                    
+                    result += create_columns(title='海外配送', body=ship_overseas, sentence_type=0)
+                    result += create_columns(title='海外配送可能地域', body=ship_overseas_area, sentence_type=1)
+
                 else:
                     raise ValueError('Invalid value.')
 
@@ -222,8 +244,8 @@ def product_search():
                 else:
                     raise ValueError('Invalid value.')
 
-                result += f"<tr><th>カード</th><td>{credit_card}</td></tr>"
-
+                result += create_columns(title='カード', body=credit_card, sentence_type=0)
+            
             # ギフト包装
             if get_gift_flag == '1':
                 gift_flag = item['giftFlag']
@@ -234,14 +256,15 @@ def product_search():
                 else:
                     raise ValueError('Invalid value.')
 
-                result += f"<tr><th>ギフト包装</th><td>{gift}</td></tr>"
-
+                result += create_columns(title='ギフト包装', body=gift, sentence_type=0)
+            
             # 商品説明
             if get_caption == '1':
                 caption = item['itemCaption']
-                result += f"<tr><th>商品説明</th><td class='text-left text-container'><p class='long-sentence'>{caption}</p></td></tr>"
-
+                result += create_columns(title='商品説明', body=caption, sentence_type=2)
+            
             result += "</table>"
+            result += f"<a href='{url}' class='btn_03' ontouchstart=''>商品はこちら</a>"
             count += 1
 
             sl(1)
@@ -249,11 +272,10 @@ def product_search():
         result += "<form action='/product' method='get' class='research'><input type='submit' value='再検索' class='submit btn--radius'></form>"
         soup = BeautifulSoup(result, 'html.parser')
         result = soup.prettify()
-        
-
+    
+    
     return render_template(result_html, result=result)
     
-
 # ゲームの検索
 @app.route('/search_game', methods=['post'])
 def game_search():
@@ -311,28 +333,29 @@ def game_search():
 
             result += f"<table class='tb01'><h2>{product_num}</h2>"
             
-            # ゲームタイトル（通常）と（カタカナ）
+            # ゲームタイトル
             game_title = item['title']
-            result += f"<tr><th>タイトル</th><td><a href='{url}'>{game_title}</a></td></tr>"
+            result += create_columns(title='タイトル', body=game_title, sentence_type=0)
 
             # 価格
             price = item['itemPrice']
-            result += f"<tr><th>価格</th><td>{price}円</td></tr>"
-            
+            result += create_columns(title='価格', body=price, sentence_type=0)
+
             # ハード
             if get_hardware == '1':
                 hardware = item['hardware']
-                result += f"<tr><th>対応機種</th><td>{hardware}</td></tr>"
+                result += create_columns(title='対応機種', body=hardware, sentence_type=0)
 
             # JANコード
             if get_jan_code == '1':
                 jan_code = item['jan']
-                result += f"<tr><th>JANコード</th><td>{jan_code}</td></tr>"
-            
+                result += create_columns(title='JANコード', body=jan_code, sentence_type=0)
+
             # 発売日
             if get_sales_date == '1':
                 sales_date = item['salesDate']
-                result += f"<tr><th>発売日</th><td>{sales_date}</td></tr>"
+                result += create_columns(title='発売日', body=sales_date, sentence_type=0)
+
             # 販売種別
             if get_limited == '1':
                 limited_type = item['limitedFlag']
@@ -342,7 +365,8 @@ def game_search():
                     limited = '限定販売'
                 else: 
                     raise ValueError('This value is nothing.')
-                result += f"<tr><th>発売種別</th><td>{limited}</td></tr>"
+                result += create_columns(title='販売種別', body=limited, sentence_type=0)
+
             # 在庫状況
             if get_availability == '1':
                 availability_type = int(item['availability'])
@@ -361,7 +385,7 @@ def game_search():
                     availability = 'メーカーに在庫確認'
                 else:
                     raise ValueError('This value is nothing.')
-                result += f"<tr><th>在庫状況</th><td>{availability}</td></tr>"
+                result += create_columns(title='在庫状況', body=availability, sentence_type=0)
 
             # 送料
             if get_postage == '1':
@@ -375,40 +399,41 @@ def game_search():
                     postage = "完全送料無料"
                 else: 
                     raise ValueError('Invalid value.')
-                result += f"<tr><th>送料</th><td>{postage}</td></tr>"
-            
+                result += create_columns(title='送料', body=postage, sentence_type=0)
+
             # レビュー数
             if get_review_count == '1':
                 review_count = item['reviewCount']
-                result += f"<tr><th>レビュー数</th><td>{review_count}件</td></tr>"
+                result += create_columns(title='レビュー数', body=review_count, sentence_type=0)
 
             # レビュー平均点数
             if get_review_average == '1':
                 review_average = item['reviewAverage']
-                result += f"<tr><th>レビュー平均</th><td>{review_average}点</td></tr>"
-            
+                result += create_columns(title='レビュー平均', body=review_average, sentence_type=0)
+
             # 販売元
             if get_label == '1':
                 label = item['label']
-                result += f"<tr><th>販売元</th><td>{label}</td></tr>"
-            
+                result += create_columns(title='販売元', body=label, sentence_type=0)
+
             # 販売店コード
             if get_maker_code == '1':
                 maker_code = item['makerCode']
-                result += f"<tr><th>販売店コード</th><td>{maker_code}</td></tr>"
-            
+                result += create_columns(title='販売店コード', body=maker_code, sentence_type=0)
+
             # 商品説明
             if get_item_caption == '1':
                 caption = item['itemCaption']
-                result += f"<tr><th>商品説明</th><td class='text-left text-container'><p class='long-sentence'>{caption}</p></td></tr>"
-
+                result += create_columns(title='商品説明', body=caption, sentence_type=2)
 
             result += "</table>"
+            result += f"<a href='{url}' class='btn_03' ontouchstart=''>製品はこちら</a>"
             count += 1
 
     result += "<form action='/game' method='get' class='research'><input type='submit' value='再検索' class='submit btn--radius'></form>"
     soup = BeautifulSoup(result, 'html.parser')
     result = soup.prettify()
+    
     
     return render_template(result_html, result=result)    
 
@@ -483,30 +508,30 @@ def book_search():
 
             # タイトル
             book_title = item['title']
-            result += f"<tr><th>タイトル</th><td><a href='{url}'>{book_title}</a></td></tr>"
+            result += create_columns(title='タイトル', body=book_title, sentence_type=0)
             
             # 価格
             price = item['itemPrice']
-            result += f"<tr><th>価格</th><td>{price}円</td></tr>"
-
+            result += create_columns(title='価格', body=price, sentence_type=0)
+            
             # 著者
             author_name = item['author']
-            result += f"<tr><th>著者</th><td>{author_name}</td></tr>"
+            result += create_columns(title='著者', body=author_name, sentence_type=0)
 
             # 出版社
             publisher_name = item['publisherName']
-            result += f"<tr><th>出版社</th><td>{publisher_name}</td></tr>"
-            
+            result += create_columns(title='出版社', body=publisher_name, sentence_type=0)
+
             # 書籍コード
             if get_isbn_code == '1':
                 isbn = item['isbn']
-                result += f"<tr><th>ISBN</th><td>{isbn}</td></tr>"
-            
+                result += create_columns(title='ISBN', body=isbn, sentence_type=0)
+
             # 発売日
             if get_book_sales_date == '1':
                 sales_date = item['salesDate']
                 sales_date = sales_date.replace('頃', '')
-                result += f"<tr><th>発売日</th><td>{sales_date}</td></tr>"
+                result += create_columns(title='発売日', body=sales_date, sentence_type=0)
 
             # 送料
             if get_postage == '1':
@@ -520,8 +545,8 @@ def book_search():
                     postage = "完全送料無料"
                 else: 
                     raise ValueError('Invalid value.')
-                result += f"<tr><th>送料</th><td>{postage}</td></tr>"
-            
+                result += create_columns(title='送料', body=postage, sentence_type=0)
+
             # 在庫状況
             if get_book_availability == '1':
                 availability_type = int(item['availability'])
@@ -547,26 +572,27 @@ def book_search():
                 else:
                     raise ValueError('This value is nothing.')
                 
-                result += f"<tr><th>在庫状況</th><td>{availability}</td></tr>"
+                result += create_columns(title='在庫状況', body=availability, sentence_type=0)
+
 
             # レビュー数
             if get_book_review_count == '1':
                 review_count = item['reviewCount']
-                result += f"<tr><th>レビュー数</th><td>{review_count}件</td></tr>"
+                result += create_columns(title='レビュー数', body=f'{review_count}件', sentence_type=0)
 
             # レビュー平均点数
             if get_book_review_average == '1':
                 review_average = item['reviewAverage']
-                result += f"<tr><th>レビュー平均</th><td>{review_average}点</td></tr>"
+                result += create_columns(title='レビュー平均', body=f'{review_average}点', sentence_type=0)
             
             # 商品説明
             if get_book_caption == '1':
                 caption = item['itemCaption']
-                result += f"<tr><th>商品説明</th><td class='text-left text-container'><p class='long-sentence'>{caption}</p></td></tr>"
+                result += create_columns(title='商品説明', body=caption, sentence_type=2)
 
             result += "</table>"
+            result += f"<a href='{url}' class='btn_03' ontouchstart=''>書籍はこちら</a>"
             count += 1
-
 
     result += "<form action='/book' method='get' class='research'><input type='submit' value='再検索' class='submit btn--radius'></form>"
     
@@ -574,6 +600,97 @@ def book_search():
     result = soup.prettify()
     
     return render_template(result_html, result=result)    
+
+
+# 宿泊施設検索
+# @app.route('/search_hotel', methods=['post'])
+# def hotel_search():
+#     url = 'https://app.rakuten.co.jp/services/api/Travel/SimpleHotelSearch/20220416'
+    
+#     # HTMLから値を取得
+#     rf = request.form
+
+#     # 1, text
+#     # ホテル番号
+#     hotel_number = rf['hotel_number']
+#     if hotel_number is not None and hotel_number.strip() == '':
+#         hotel_number = None
+#     else:
+#         hotel_number = int(hotel_number) 
+    
+#     # 緯度
+#     latitude = rf['latitude']
+#     if latitude is not None and latitude.strip() == '':
+#         latitude = None
+#     else:
+#         if '.' in latitude:
+#             latitude = float(latitude)
+#         else:
+#             latitude = int(latitude)
+        
+#     # 経度
+#     longitude = rf['longitude'] 
+#     if longitude is not None and longitude.strip() == '':
+#         longitude = None
+#     else:
+#         if '.' in longitude:
+#             longitude = float(longitude)
+#         else:
+#             longitude = int(longitude)
+        
+#     # 2, select
+#     prefectures = rf['prefectures']
+#     hotel_sort = rf['hotel_sort']
+#     want_hotel = rf['want_hotel']
+#     # 3, checkbox
+
+
+#     # パラメーター 
+#     params = {
+#         'applicationId': app_id,
+#         'affiliateId': affiliate_id,
+#         'hotelNo': hotel_number,
+#         'latitude': latitude,
+#         'longitude': longitude,
+#         'largeClassCode': 'japan',
+#         'middleClassCode': prefectures,
+#         'hits': want_hotel,
+#         'sort': hotel_sort,
+#         'responseType': 'large',
+#         'allReturnFlag': 1
+#     }
+    
+#     # 
+#     res = requests.get(url, params=params).json()
+#     hotels = res['hotels']
+#     count = 1
+    
+#     # 
+#     if not hotels:
+#         result = "<h2>ホテル情報がありません</h2>"
+#     else:
+#         result = "<div class='grid-container'>"
+#         for h in hotels:
+#             hotel = h['hotel']
+            
+#             hotel_title = hotel['hotelName']
+#             hotel_num = f'商品No.{count}'
+
+
+#             result += f"<table class='tb01'><h2>{hotel_num}</h2>"
+
+#             result += f"<tr><th>ホテル</th><td>{hotel_title}<td></td/tr>"
+        
+#         result += "</table>"
+#         count += 1
+
+
+#     result += "<form action='/hotel' method='get' class='research'><input type='submit' value='再検索' class='submit btn--radius'></form>"
+#     soup = BeautifulSoup(result, 'html.parser')
+#     result = soup.prettify()
+    
+#     return render_template(result_html, result=result) 
+
 
 
 

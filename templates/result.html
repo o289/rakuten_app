@@ -7,8 +7,10 @@
 </head>
 <body>
     
-    {{result | safe }}
     
+    {{result | safe }}
+
+
     <style>
         *{
             margin: 0;
@@ -30,6 +32,7 @@
             font-size: 24px;
             padding: 6% 0;
         }
+        /* 商品の表 */
         table{
             border-collapse: collapse;
             width: 80%;
@@ -68,9 +71,27 @@
         }
 
         }
-
         
-
+        /* 商品リンク */
+        a.btn_03 {
+            display: block;
+            text-align: center;
+            /* vertical-align: middle; */
+            text-decoration: none;
+            width: 120px;
+            margin: 2.5% auto;
+            padding: 1rem 4rem;
+            font-weight: bold;
+            border: 2px solid var(--maincolor);
+            color: var(--maincolor);
+            border-radius: 100vh;
+            transition: 0.5s;
+        }
+        a.btn_03:hover {
+            color: #fff;
+            background: var(--maincolor);
+        }
+    
         .image{
             display: block;
             width: 30%;
@@ -86,6 +107,7 @@
             max-height: 500px;
             overflow-y: auto;
         }
+        /*  再検索ボタン */
         .research{
             width: 50%;
             margin: 0  auto;
