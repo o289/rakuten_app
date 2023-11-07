@@ -404,12 +404,12 @@ def game_search():
             # レビュー数
             if get_review_count == '1':
                 review_count = item['reviewCount']
-                result += create_columns(title='レビュー数', body=review_count, sentence_type=0)
+                result += create_columns(title='レビュー数', body=f'{review_count}件', sentence_type=0)
 
             # レビュー平均点数
             if get_review_average == '1':
                 review_average = item['reviewAverage']
-                result += create_columns(title='レビュー平均', body=review_average, sentence_type=0)
+                result += create_columns(title='レビュー平均', body=f'{review_average}点', sentence_type=0)
 
             # 販売元
             if get_label == '1':
@@ -690,7 +690,6 @@ def book_search():
 #     result = soup.prettify()
     
 #     return render_template(result_html, result=result) 
-
 
 
 
