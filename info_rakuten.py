@@ -144,7 +144,7 @@ def product_search():
 
             # 価格
             price = item['itemPrice']
-            result += create_columns(title='価格', body=price, sentence_type=0)
+            result += create_columns(title='価格', body=f'{price}円', sentence_type=0)
             
             # 税
             if get_tax == '1':
@@ -339,8 +339,8 @@ def game_search():
 
             # 価格
             price = item['itemPrice']
-            result += create_columns(title='価格', body=price, sentence_type=0)
-
+            result += create_columns(title='価格', body=f'{price}円', sentence_type=0)
+            
             # ハード
             if get_hardware == '1':
                 hardware = item['hardware']
@@ -512,7 +512,7 @@ def book_search():
             
             # 価格
             price = item['itemPrice']
-            result += create_columns(title='価格', body=price, sentence_type=0)
+            result += create_columns(title='価格', body=f'{price}円', sentence_type=0)
             
             # 著者
             author_name = item['author']
@@ -690,6 +690,4 @@ def book_search():
 #     result = soup.prettify()
     
 #     return render_template(result_html, result=result) 
-
-
 
