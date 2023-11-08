@@ -121,6 +121,9 @@ def product_search():
     }
 
     res = requests.get(url, params=params).json()
+    res_code = requests.get(url).status_code
+    print(res_code)
+
     items = res['Items']
 
     if not items:
@@ -315,6 +318,9 @@ def game_search():
     } 
 
     res = requests.get(url, params=params).json()
+    res_code = requests.get(url).status_code
+    print(res_code)
+
     items = res['Items']
     count = 1
     
@@ -488,6 +494,9 @@ def book_search():
     
     # 
     res = requests.get(url, params=params).json()
+    res_code = requests.get(url).status_code
+    print(res_code)
+
     items = res['Items']
     count = 1
     
@@ -690,4 +699,3 @@ def book_search():
 #     result = soup.prettify()
     
 #     return render_template(result_html, result=result) 
-
