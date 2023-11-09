@@ -7,7 +7,6 @@
 </head>
 <body>
     
-    
     {{result | safe }}
 
 
@@ -30,7 +29,7 @@
         h2{
             text-align: center;
             font-size: 24px;
-            padding: 6% 0;
+            padding: 2% 0;
         }
         /* 商品の表 */
         table{
@@ -56,20 +55,22 @@
         }
 
         @media screen and (max-width: 768px) {
-        .tb01 {
-            width: 90%;
-            margin: 0 auto;
-        }
-        table.tb01 th,
-        table.tb01 td {
-            display: block;
-            width: 100%;
-            border-bottom:none;
-        }
-        .tb01 tr:last-child{
-            border-bottom: solid 1px #ccc;
-        }
-
+            .tb01 {
+                width: 90%;
+                margin: 0 auto;
+            }
+            table.tb01 th,
+            table.tb01 td {
+                display: block;
+                width: 100%;
+                border-bottom:none;
+            }
+            .tb01 tr:last-child{
+                border-bottom: solid 1px #ccc;
+            }
+            h2{
+                padding: 12% 0;
+            }
         }
         
         /* 商品リンク */

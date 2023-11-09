@@ -14,7 +14,7 @@ root_html = 'index.html'
 product_html = 'product.html'
 game_html = 'game.html'
 book_html = 'book.html'
-hotel_html = 'hotel.html'
+golf_html = 'golf.html'
 result_html = 'result.html'
 
 # class
@@ -45,17 +45,15 @@ def game():
 def book():
     return render_template(book_html)
 
-# ホテル検索画面
-# @app.route('/hotel', methods=['get'])
-# def hotel():
-#     return render_template(hotel_html)
-
-# 
+# ゴルフ検索画面
+@app.route('/golf', methods=['get'])
+def golf():
+    return render_template(golf_html)
 
 
 
 # カラムを作成する This is creating columns of search result.
-def create_columns(title, body, sentence_type: int):
+def create_columns(title: str, body, sentence_type: int):
     # 普通
     if sentence_type == 0:
         columns = f"<tr><th>{title}</th><td>{body}</td></tr>"
@@ -78,13 +76,12 @@ def product_search():
     rf = request.form
     
     # 検索パラメーター  
-    product_search = rf['product']
+    keyword = rf['product']
     want_product_length_search = int(rf['want_product'])
     max_price_search = int(rf['max_price'])
     min_price_search = int(rf['min_price'])
     product_sort = rf['product_sort']
     postage_sort = int(rf['postage'])
-    
     purchase_type = int(rf['purchase_type'])
     if purchase_type >= 3:
         raise ValueError('Over 3 is Invalid value.')
@@ -104,7 +101,7 @@ def product_search():
     get_gift_flag = rf.get('get_gift_flag', '0')
     
     # 楽天APIにリクエストするためのパラメーター
-    keyword = product_search
+    
     params = {
         "applicationId": app_id, 
         "affiliateId": affiliate_id,
@@ -120,8 +117,12 @@ def product_search():
         
     }
 
-    res = requests.get(url, params=params).json()
-    res_code = requests.get(url).status_code
+
+    # レスポンス
+    response = requests.get(url, params=params) 
+    res = response.json()
+    res_code = response.status_code
+    
     print(res_code)
 
     items = res['Items']
@@ -270,12 +271,10 @@ def product_search():
             result += f"<a href='{url}' class='btn_03' ontouchstart=''>商品はこちら</a>"
             count += 1
 
-            sl(1)
-
         result += "<form action='/product' method='get' class='research'><input type='submit' value='再検索' class='submit btn--radius'></form>"
         soup = BeautifulSoup(result, 'html.parser')
         result = soup.prettify()
-    
+        sl(1)
     
     return render_template(result_html, result=result)
     
@@ -317,8 +316,11 @@ def game_search():
         "page": 1,
     } 
 
-    res = requests.get(url, params=params).json()
-    res_code = requests.get(url).status_code
+    # レスポンス
+    response = requests.get(url, params=params) 
+    res = response.json()
+    res_code = response.status_code
+    
     print(res_code)
 
     items = res['Items']
@@ -434,12 +436,13 @@ def game_search():
 
             result += "</table>"
             result += f"<a href='{url}' class='btn_03' ontouchstart=''>製品はこちら</a>"
+            
             count += 1
 
     result += "<form action='/game' method='get' class='research'><input type='submit' value='再検索' class='submit btn--radius'></form>"
     soup = BeautifulSoup(result, 'html.parser')
     result = soup.prettify()
-    
+    sl(1)
     
     return render_template(result_html, result=result)    
 
@@ -492,9 +495,11 @@ def book_search():
         'hits': want_get_book_length,
     }
     
-    # 
-    res = requests.get(url, params=params).json()
-    res_code = requests.get(url).status_code
+    # レスポンス
+    response = requests.get(url, params=params) 
+    res = response.json()
+    res_code = response.status_code
+    
     print(res_code)
 
     items = res['Items']
@@ -603,99 +608,126 @@ def book_search():
             result += f"<a href='{url}' class='btn_03' ontouchstart=''>書籍はこちら</a>"
             count += 1
 
-    result += "<form action='/book' method='get' class='research'><input type='submit' value='再検索' class='submit btn--radius'></form>"
-    
+    result += "<form action='/book' method='get' class='research'><input type='submit' value='再検索' class='submit btn--radius'></form>"    
     soup = BeautifulSoup(result, 'html.parser')
     result = soup.prettify()
-    
+    sl(1)
     return render_template(result_html, result=result)    
 
 
-# 宿泊施設検索
-# @app.route('/search_hotel', methods=['post'])
-# def hotel_search():
-#     url = 'https://app.rakuten.co.jp/services/api/Travel/SimpleHotelSearch/20220416'
+# ゴルフ場検索
+@app.route('/search_golf', methods=['post'])
+def golf_search():
+    url = 'https://app.rakuten.co.jp/services/api/Gora/GoraGolfCourseSearch/20170623'
     
-#     # HTMLから値を取得
-#     rf = request.form
-
-#     # 1, text
-#     # ホテル番号
-#     hotel_number = rf['hotel_number']
-#     if hotel_number is not None and hotel_number.strip() == '':
-#         hotel_number = None
-#     else:
-#         hotel_number = int(hotel_number) 
-    
-#     # 緯度
-#     latitude = rf['latitude']
-#     if latitude is not None and latitude.strip() == '':
-#         latitude = None
-#     else:
-#         if '.' in latitude:
-#             latitude = float(latitude)
-#         else:
-#             latitude = int(latitude)
+    # HTMLから値を取得
+    rf = request.form
+    # 1, text
+    # ゴルフ場
+    golf_course = rf['golf_course']
+    if golf_course is not None and golf_course.strip() == '':
+        golf_course = None
         
-#     # 経度
-#     longitude = rf['longitude'] 
-#     if longitude is not None and longitude.strip() == '':
-#         longitude = None
-#     else:
-#         if '.' in longitude:
-#             longitude = float(longitude)
-#         else:
-#             longitude = int(longitude)
-        
-#     # 2, select
-#     prefectures = rf['prefectures']
-#     hotel_sort = rf['hotel_sort']
-#     want_hotel = rf['want_hotel']
-#     # 3, checkbox
 
-
-#     # パラメーター 
-#     params = {
-#         'applicationId': app_id,
-#         'affiliateId': affiliate_id,
-#         'hotelNo': hotel_number,
-#         'latitude': latitude,
-#         'longitude': longitude,
-#         'largeClassCode': 'japan',
-#         'middleClassCode': prefectures,
-#         'hits': want_hotel,
-#         'sort': hotel_sort,
-#         'responseType': 'large',
-#         'allReturnFlag': 1
-#     }
+    # 2, select
+    prefectures = int(rf['prefectures'])
+    golf_sort = rf['golf_sort']
+    want_golf = rf['want_golf']
     
-#     # 
-#     res = requests.get(url, params=params).json()
-#     hotels = res['hotels']
-#     count = 1
+    # 3, checkbox
+    get_caption = rf.get('get_caption', '0')
+    get_evaluation = rf.get('get_evaluation', '0')
+    get_id = rf.get('get_id', '0')
+    get_latitude = rf.get('get_latitude', '0')
+    get_longitude = rf.get('get_longitude', '0')
+    get_highway = rf.get('get_highway', '0')
     
-#     # 
-#     if not hotels:
-#         result = "<h2>ホテル情報がありません</h2>"
-#     else:
-#         result = "<div class='grid-container'>"
-#         for h in hotels:
-#             hotel = h['hotel']
+    # パラメーター 
+    params = {
+        'applicationId': app_id,
+        'affiliateId': affiliate_id,
+        'keyword': golf_course,
+        'areaCode': prefectures,
+        'hits': want_golf,
+        'sort': golf_sort,
+        'reservation': 1
+    }
+    
+    # レスポンス
+    response = requests.get(url, params=params) 
+    res = response.json()
+    res_code = response.status_code
+    
+    print(res_code)
+    
+    items = res['Items']
+    count = 1
+    
+    if not items:
+        result = "<h2>ゴルフ場情報がありません</h2>"
+    else:
+        result = "<div class='grid-container'>"
+        for i in items:
+            item = i['Item']
             
-#             hotel_title = hotel['hotelName']
-#             hotel_num = f'商品No.{count}'
+            golf_num = f'ゴルフ場No.{count}'
+            result += f"<table class='tb01'><h2>{golf_num}</h2>"
+
+            # URL
+            url1 = item['golfCourseDetailUrl']
+            url2 = item['reserveCalUrl']
 
 
-#             result += f"<table class='tb01'><h2>{hotel_num}</h2>"
+            # ゴルフ場
+            golf_course_name = item['golfCourseName']
+            result += create_columns(title='ゴルフ場', body=golf_course_name, sentence_type=0)
+            
+            # ゴルフ場ID
+            if get_id == '1':
+                golf_course_id = item['golfCourseId']
+                result += create_columns(title='ゴルフ場ID', body=golf_course_id, sentence_type=0)
+                
+            # 総合評価
+            if get_evaluation == '1':
+                evaluation = item['evaluation']
+                result += create_columns(title='総合評価', body=evaluation, sentence_type=0)
 
-#             result += f"<tr><th>ホテル</th><td>{hotel_title}<td></td/tr>"
-        
-#         result += "</table>"
-#         count += 1
+            # 所在地
+            address = item['address']
+            result += create_columns(title='所在地', body=address, sentence_type=0)
+
+            # 緯度
+            if get_latitude == '1':
+                latitude = item['latitude']
+                result += create_columns(title='緯度', body=latitude, sentence_type=0)
+
+            # 経度
+            if get_longitude == '1':
+                longitude = item['longitude']
+                result += create_columns(title='経度', body=longitude, sentence_type=0)
+                
+            # 高速道路
+            if get_highway == '1':
+                highway = item['highway']
+                result += create_columns(title='最寄り高速道路', body=highway, sentence_type=0)
+
+            # ゴルフ場説明
+            if get_caption == '1':
+                caption = item['golfCourseCaption']
+                result += create_columns(title='ゴルフ場説明', body=caption, sentence_type=2)
+
+            
+            result += "</table>"
+            result += f"<a href='{url1}' class='btn_03' ontouchstart=''>詳細はこちら</a>"
+            result += f"<a href='{url2}' class='btn_03' ontouchstart=''>予約はこちら</a>"
+
+            count += 1
 
 
-#     result += "<form action='/hotel' method='get' class='research'><input type='submit' value='再検索' class='submit btn--radius'></form>"
-#     soup = BeautifulSoup(result, 'html.parser')
-#     result = soup.prettify()
+    result += "<form action='/golf' method='get' class='research'><input type='submit' value='再検索' class='submit btn--radius'></form>"
+    soup = BeautifulSoup(result, 'html.parser')
+    result = soup.prettify()
+    sl(1)
     
-#     return render_template(result_html, result=result) 
+    return render_template(result_html, result=result) 
+
