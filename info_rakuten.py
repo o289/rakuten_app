@@ -15,6 +15,7 @@ product_html = 'product.html'
 game_html = 'game.html'
 book_html = 'book.html'
 golf_html = 'golf.html'
+hotel_html = 'hotel.html'
 result_html = 'result.html'
 
 # class
@@ -50,6 +51,11 @@ def book():
 def golf():
     return render_template(golf_html)
 
+# ホテル検索画面
+@app.route('/hotel', methods=['get'])
+def hotel():
+    return render_template(hotel_html)
+
 
 
 # カラムを作成する This is creating columns of search result.
@@ -57,16 +63,68 @@ def create_columns(title: str, body, sentence_type: int):
     # 普通
     if sentence_type == 0:
         columns = f"<tr><th>{title}</th><td>{body}</td></tr>"
+    
     # まあまあ長い文章
     elif sentence_type == 1:
         columns = f"<tr><th>{title}</th><td class='text-left'>{body}</td></tr>"
+    
     # 長い文章
     elif sentence_type == 2:
         columns = f"<tr><th>{title}</th><td class='text-left text-container'><p class='long-sentence'>{body}</p></td></tr>"
+    
+    # 得点
+    elif sentence_type == 3:
+        columns = f"<tr><th>{title}</th><td>{body}点</td></tr>"
+    
+    # 件数
+    elif sentence_type == 4:
+        columns = f"<tr><th>{title}</th><td>{body}件</td></tr>"
+    
+    # 価格
+    elif sentence_type == 5:
+        columns = f"<tr><th>{title}</th><td>{body}円</td></tr>"
+
     else:
-        raise ValueError('You must set 0, 1 or 2 in sentence_type.')
+        raise ValueError('You must set 0 ~ 5 in sentence_type.')
     return columns
 
+
+# レビュー点数の星5化
+def star(obj):
+    if obj is None:
+        value = 'なし'
+    else:
+        obj = str(obj)
+
+        # カンマが含まれていたら、小数点なので四捨五入する
+        if '.' in obj:
+            obj = float(obj)
+            obj = round(obj)
+        else:
+            obj = int(obj)
+        # 点数で星の数を分ける
+        if obj == 5:
+            value = '★★★★★'
+        
+        elif obj >= 4:
+            value = '★★★★☆'
+        
+        elif obj >= 3:
+            value = '★★★☆☆'
+        
+        elif obj >= 2:
+            value = '★★☆☆☆' 
+        
+        elif obj >= 1:
+            value = '★☆☆☆☆'
+        
+        elif obj == 0:
+            value = '評価なし'
+        
+        else:
+            raise ValueError('This value was nothing.')
+        
+    return value
 
 
 # 商品検索
@@ -148,7 +206,7 @@ def product_search():
 
             # 価格
             price = item['itemPrice']
-            result += create_columns(title='価格', body=f'{price}円', sentence_type=0)
+            result += create_columns(title='価格', body=price, sentence_type=5)
             
             # 税
             if get_tax == '1':
@@ -267,7 +325,7 @@ def product_search():
                 caption = item['itemCaption']
                 result += create_columns(title='商品説明', body=caption, sentence_type=2)
             
-            result += "</table>"
+            result += "</table></div>"
             result += f"<a href='{url}' class='btn_03' ontouchstart=''>商品はこちら</a>"
             count += 1
 
@@ -434,7 +492,7 @@ def game_search():
                 caption = item['itemCaption']
                 result += create_columns(title='商品説明', body=caption, sentence_type=2)
 
-            result += "</table>"
+            result += "</table></div>"
             result += f"<a href='{url}' class='btn_03' ontouchstart=''>製品はこちら</a>"
             
             count += 1
@@ -604,7 +662,7 @@ def book_search():
                 caption = item['itemCaption']
                 result += create_columns(title='商品説明', body=caption, sentence_type=2)
 
-            result += "</table>"
+            result += "</table></div>"
             result += f"<a href='{url}' class='btn_03' ontouchstart=''>書籍はこちら</a>"
             count += 1
 
@@ -717,7 +775,9 @@ def golf_search():
                 result += create_columns(title='ゴルフ場説明', body=caption, sentence_type=2)
 
             
-            result += "</table>"
+
+            
+            result += "</table></div>"
             result += f"<a href='{url1}' class='btn_03' ontouchstart=''>詳細はこちら</a>"
             result += f"<a href='{url2}' class='btn_03' ontouchstart=''>予約はこちら</a>"
 
@@ -728,6 +788,365 @@ def golf_search():
     soup = BeautifulSoup(result, 'html.parser')
     result = soup.prettify()
     sl(1)
-    
     return render_template(result_html, result=result) 
 
+
+# 宿泊施設検索
+@app.route('/search_hotel', methods=['post'])
+def hotel_search():
+    url = 'https://app.rakuten.co.jp/services/api/Travel/KeywordHotelSearch/20170426'
+    rf = request.form
+
+    # 1. input
+    keyword = rf['keyword']
+    # 2. select_box
+    hotel_sort = rf['hotel_sort']
+    want_hotel = int(rf['want_hotel'])
+    prefecture = rf['prefecture']
+    review = int(rf['review'])
+    # 3. checkbox
+    get_hotel_number = rf.get('get_hotel_number', '0')
+    get_hotel_special = rf.get('get_hotel_special', '0')
+    get_hotel_latitude = rf.get('get_hotel_latitude', '0')
+    get_hotel_longitude = rf.get('get_hotel_longitude', '0')
+    get_hotel_postal_code = rf.get('get_hotel_postal_code', '0')
+    get_hotel_address = rf.get('get_hotel_address', '0')
+    get_hotel_telephone = rf.get('get_hotel_telephone', '0')
+    get_hotel_fax = rf.get('get_hotel_fax', '0')
+    get_hotel_access = rf.get('get_hotel_access', '0')
+    get_hotel_parking = rf.get('get_hotel_parking', '0')
+    get_hotel_station = rf.get('get_hotel_station', '0')
+    get_review_count = rf.get('get_review_count', '0')
+    get_reviews = rf.get('get_reviews', '0')
+    get_reserve_telephone = rf.get('get_reserve_telephone', '0')
+    get_area_name = rf.get('get_area_name', '0')
+    get_hotel_class_code = rf.get('get_hotel_class_code', '0')
+    get_check_time = rf.get('get_check_time', '0')
+    get_hotel_room_num = rf.get('get_hotel_room_num', '0')
+    get_room_facilities = rf.get('get_room_facilities', '0')
+    get_all_hotel_facilities = rf.get('get_all_hotel_facilities', '0')   
+    get_about_leisure = rf.get('get_about_leisure', '0')
+    get_handicapped_facilities = rf.get('get_handicapped_facilities', '0')
+    get_linguistic_level = rf.get('get_linguistic_level', '0')
+    get_note = rf.get('get_note', '0')
+    get_cancel_policy = rf.get('get_cancel_policy', '0')
+    get_credit_card = rf.get('get_credit_card', '0')
+    get_privilege = rf.get('get_privilege', '0')
+
+
+
+    params = {
+        'applicationId': app_id,
+        'affiliateId': affiliate_id,
+        'keyword': keyword,
+        'middleClassCode': prefecture,
+        'sort': hotel_sort,
+        'hits': want_hotel,
+        'responseType': 'large',
+        'formatVersion': 2
+    }
+    
+    # レスポンス
+    response = requests.get(url, params=params) 
+    res = response.json()
+    res_code = response.status_code
+    print(res_code)
+
+    hotels = res['hotels']
+    count = 1
+    
+    
+    if not hotels:
+        result = '<h2>この条件では見つかりませんでした。</h2>'
+    else:
+        result = "<div class='grid-container'>"
+        for hotel in hotels:
+
+            #  
+            hotel_num = f'ホテルNo.{count}'
+            result += f"<table class='tb01'><h2>{hotel_num}</h2>"
+            
+            
+            
+            # 1, 基本情報
+            hotel_basic = hotel[0]['hotelBasicInfo']
+            
+            # URL 
+            url1 = hotel_basic['hotelInformationUrl']
+            url2 = hotel_basic['planListUrl']
+
+            # ホテル名
+            hotel_name = hotel_basic['hotelName']
+            result += create_columns(title='ホテル', body=hotel_name, sentence_type=0)
+            
+            # 価格
+            hotel_min_price = hotel_basic['hotelMinCharge']
+            if hotel_min_price is None:
+                result += create_columns(title='最安値', body=f'詳細についてをクリック', sentence_type=0)
+            else:
+                result += create_columns(title='最安値', body=hotel_min_price, sentence_type=5)
+
+            # ホテル番号
+            if get_hotel_number == '1':
+                hotel_number = hotel_basic['hotelNo']
+                result += create_columns(title='ホテル番号', body=hotel_number, sentence_type=0)
+
+            # ホテル説明
+            if get_hotel_special == '1':
+                hotel_special = hotel_basic['hotelSpecial']
+                result += create_columns(title='ホテル説明', body=hotel_special, sentence_type=0)
+
+
+            # 緯度
+            if get_hotel_latitude == '1':
+                latitude = hotel_basic['latitude']
+                result += create_columns(title='緯度', body=latitude, sentence_type=0)
+                
+            # 経度
+            if get_hotel_longitude == '1':
+                longitude = hotel_basic['longitude']
+                result += create_columns(title='経度', body=longitude, sentence_type=0)
+
+            # 郵便番号
+            if get_hotel_postal_code == '1':
+                postal_code = hotel_basic['postalCode']
+                result += create_columns(title='郵便番号', body=postal_code, sentence_type=0)
+
+            # 住所
+            if get_hotel_address == '1':
+                address1 = hotel_basic['address1']
+                address2 = hotel_basic['address2']
+                address = address1 + address2
+                result += create_columns(title='住所', body=address, sentence_type=0)
+
+            # 施設電話番号
+            if get_hotel_telephone == '1':
+                telephone = hotel_basic['telephoneNo']
+                result += create_columns(title='電話番号', body=telephone, sentence_type=0)
+
+            # FAX
+            if get_hotel_fax == '1':
+                fax = hotel_basic['faxNo']
+                result += create_columns(title='FAX番号', body=fax, sentence_type=0)
+
+            # アクセス
+            if get_hotel_access == '1':
+                access = hotel_basic['access']
+                result += create_columns(title='アクセス', body=access, sentence_type=0)
+
+            # 駐車場情報
+            if get_hotel_parking == '1':
+                parking = hotel_basic['parkingInformation']
+                result += create_columns(title='駐車場', body=parking, sentence_type=0)
+
+            # 最寄り駅
+            if get_hotel_station == '1':
+                station = hotel_basic['nearestStation']
+                result += create_columns(title='最寄り駅', body=station, sentence_type=0)
+
+            # レビュー数
+            if get_review_count == '1':
+                review_count = hotel_basic['reviewCount']
+                if review_count is None:
+                    review_count = 'なし'
+                    result += create_columns(title='レビュー数', body=review_count, sentence_type=0)
+                else:
+                    result += create_columns(title='レビュー数', body=review_count, sentence_type=4)
+
+            
+            
+            
+            
+            # 2, レビュー・サービス・ロケーション・部屋・施設・風呂・食事
+            
+            if get_reviews == '1':
+                review_average = hotel_basic['reviewAverage']
+                hotel_rating = hotel[1]['hotelRatingInfo']
+                service_average = hotel_rating['serviceAverage']
+                location_average = hotel_rating['locationAverage']
+                room_average = hotel_rating['roomAverage']
+                equipment_average = hotel_rating['equipmentAverage']
+                bath_average = hotel_rating['bathAverage']
+                meal_average = hotel_rating['mealAverage']
+                
+                if review == 1:
+                    reviews = f"<ul><li>平均:{star(obj=review_average)}</li><li>接客:{star(obj=service_average)}</li><li>立地:{star(obj=location_average)}</li><li>部屋:{star(obj=room_average)}</li><li>施設:{star(obj=equipment_average)}</li><li>風呂:{star(obj=bath_average)}</li><li>食事:{star(obj=meal_average)}</li></ul>"
+                else:
+                    reviews = f"<ul><li>平均:{review_average}</li><li>接客:{service_average}</li><li>立地:{location_average}</li><li>部屋:{room_average}</li><li>施設:{equipment_average}</li><li>風呂:{bath_average}</li><li>食事:{meal_average}</li></ul>"
+
+                result += create_columns(title='レビュー', body=reviews, sentence_type=0)
+                
+            
+            
+            
+            
+            
+            # 3, ホテル詳細情報
+            hotel_detail = hotel[2]['hotelDetailInfo']
+
+            # 予約センター電話番号
+            if get_reserve_telephone == '1':
+                reserve_telephone = hotel_detail['reserveTelephoneNo']
+                result += create_columns(title='予約センター電話番号', body=reserve_telephone, sentence_type=0)
+
+            # エリア
+            if get_area_name == '1':
+                area_name = hotel_detail['areaName']
+                result += create_columns(title='エリア', body=area_name, sentence_type=0)
+
+            # ホテルクラスコード
+            if get_hotel_class_code == '1':
+                hotel_class_code = hotel_detail['hotelClassCode']
+                result += create_columns(title='ホテルクラスコード', body=hotel_class_code, sentence_type=0)
+
+            # チェックイン・チェックアウト
+            if get_check_time == '1':
+                checkin_time = hotel_detail['checkinTime']
+                last_checkin_time = hotel_detail['lastCheckinTime']
+                checkout_time = hotel_detail['checkoutTime']
+                if last_checkin_time is None:
+                    last_checkin_time = 'なし'
+                else:
+                    last_checkin_time = last_checkin_time
+                
+                check_time = f"<ul><li>チェックイン:{checkin_time}</li><li>最終チェックイン:{last_checkin_time}</li><li>チェックアウト:{checkout_time}</li></ul>"
+
+                result += create_columns(title='チェック時刻', body=check_time, sentence_type=0)
+            
+            
+            
+            
+            
+            
+            
+            # 4, ホテル施設詳細情報
+            hotel_facilities = hotel[3]['hotelFacilitiesInfo']
+
+            # 部屋数
+            if get_hotel_room_num == '1':
+                hotel_room_num = hotel_facilities['hotelRoomNum']
+                result += create_columns(title='部屋数', body=hotel_room_num, sentence_type=0)
+
+            # 部屋の設備・備品
+            if get_room_facilities == '1':
+                room_facilities = hotel_facilities['roomFacilities']
+                room_facility= ''
+                for fac in room_facilities:
+                    facility = f"[{fac['item']}]、" 
+                    room_facility += facility
+                
+                result += create_columns(title='設備・備品', body=room_facility, sentence_type=2)
+
+            # 館内の設備
+            if get_all_hotel_facilities == '1':
+                all_hotel_facilities = hotel_facilities['hotelFacilities']
+                all_hotel_facility= ''
+                
+                for fac in all_hotel_facilities:
+                    facility = f"[{fac['item']}]、" 
+                    all_hotel_facility += facility
+                
+                result += create_columns(title='館内設備', body=all_hotel_facility, sentence_type=2)
+
+            # レジャー
+            if get_about_leisure == '1':
+                about_leisure = hotel_facilities['aboutLeisure']
+                if about_leisure is None:
+                    about_leisure = 'なし'
+                    result += create_columns(title='近くのレジャー施設', body=about_leisure, sentence_type=0)
+                else:
+                    result += create_columns(title='近くのレジャー施設', body=about_leisure, sentence_type=2)
+                
+            
+            # 身体障害者設備
+            if get_handicapped_facilities == '1':
+                handicapped_facilities = hotel_facilities['handicappedFacilities']
+                handicappeds = ''
+                if not handicapped_facilities:
+                    handicappeds = 'なし'
+                    result += create_columns(title='身体障者設備', body=handicappeds, sentence_type=0)
+                else:
+                    for h in handicapped_facilities:
+                        handicapped = f"{h['item']}、"
+                        handicappeds += handicapped
+                    result += create_columns(title='身体障者設備', body=handicappeds, sentence_type=2)
+            
+            # スタッフの言語レベル
+            if get_linguistic_level == '1':
+                linguistic_level = hotel_facilities['linguisticLevel']
+                if linguistic_level is None:
+                    linguistic_level = 'なし'
+                    
+                result += create_columns(title='スタッフ外国語レベル', body=linguistic_level, sentence_type=0)
+                
+            
+            
+            
+            
+            # 5, 宿泊条件・決済関連
+            hotel_policy_info = hotel[4]['hotelPolicyInfo']
+
+            # 条件・注意事項・備考
+            if get_note == '1':
+                note = hotel_policy_info['note']
+                result += create_columns(title='条件・注意事項・備考', body=note, sentence_type=2)
+
+            # キャンセル
+            if get_cancel_policy == '1':
+                cancel_policy = hotel_policy_info['cancelPolicy']
+                if cancel_policy is None:
+                    cancel = 'なし'
+                else:
+                    cancel = cancel_policy
+                
+                result += create_columns(title='キャンセル', body=cancel, sentence_type=0)
+
+            # 使用可能カード
+            if get_credit_card == '1':
+                available_credit_card = hotel_policy_info['availableCreditCard']
+                about_credit_card_note = hotel_policy_info['aboutCreditCardNote']
+                if available_credit_card is None:
+                    credit_card = '不可'
+                else:
+                    credit_card = "<ul class='card-list'>"
+                    for c in available_credit_card:
+                        card = c['card']
+                        credit_card += f"<li>{card}</li>"
+                    credit_card += '</ul>'
+                
+                result += create_columns(title='クレジットカード', body=credit_card, sentence_type=2)
+                    
+                if about_credit_card_note is not None:
+                    result += create_columns(title='クレジットカード利用における注意', body=about_credit_card_note,sentence_type=0)
+                
+            
+
+
+            # 6, その他
+            other_info = hotel[5]['hotelOtherInfo']
+            # 特典
+
+            if get_privilege == '1':
+                privilege = other_info['privilege']            
+                if privilege is not None:
+                    privilege = 'なし'
+                else: 
+                    privilege = privilege
+                
+                result += create_columns(title='特典', body=privilege, sentence_type=0)
+                
+            
+            
+            result += '</table></div>'
+            # リンク
+            result += f"<a href='{url1}' class='btn_03' ontouchstart=''>詳細はこちら</a>"
+            result += f"<a href='{url2}' class='btn_03' ontouchstart=''>予約はこちら</a>"
+
+            count += 1
+
+    result += "<form action='/hotel' method='get' class='research'><input type='submit' value='再検索' class='submit btn--radius'></form>"
+    soup = BeautifulSoup(result, 'html.parser')
+    result = soup.prettify()
+    sl(1)
+    
+    return render_template(result_html, result=result)

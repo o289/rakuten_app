@@ -1,0 +1,222 @@
+{% extends "nav.html" %}
+
+{% block content %}
+    <h2 class="text-center">ホテル検索</h2>
+    <form action="/search_hotel" method="post" class="d-block w-75 mx-auto">
+        <div class="form-group">
+            <label for="keyword">ホテル名</label>
+            <input type="text" name="keyword" id="keyword" placeholder="ホテル名を入力" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="hotel_sort"">ソート</label>
+            <select name="hotel_sort" id="hotel_sort" class="form-control" >
+                <option value="standard" selected>デフォルト</option>
+                <option value="+roomCharge">値段が安い順</option>
+                <option value="-roomCharge">値段が高い順</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="review">得点表記方式</label>
+            <select name="review" id="review" class="form-control">
+                <option value="0" selected>数字(小数点を表示)</option>
+                <option value="1">星5(小数点は四捨五入)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="want">取得ホテル数</label>
+            <select class="form-control" id="want" name="want_hotel">
+                <option value="1" selected >1件</option>
+                <option value="5">5件</option>
+                <option value="10">10件</option>
+                <option value="15">15件</option>
+                <option value="20">20件</option>
+                <option value="30">30件</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="prefecture">都道府県選択:</label>
+            <select id="prefecture" name="prefecture" class="form-control">
+                <option value="hokkaido">北海道</option>
+                <option value="aomori">青森</option>
+                <option value="iwate">岩手</option>
+                <option value="miyagi">宮城</option>
+                <option value="akita">秋田</option>
+                <option value="yamagata">山形</option>
+                <option value="fukushima">福島</option>
+                <option value="ibaraki">茨城</option>
+                <option value="tochigi">栃木</option>
+                <option value="gunma">群馬</option>
+                <option value="saitama">埼玉</option>
+                <option value="chiba">千葉</option>
+                <option value="tokyo">東京</option>
+                <option value="kanagawa">神奈川</option>
+                <option value="niigata">新潟</option>
+                <option value="toyama">富山</option>
+                <option value="ishikawa">石川</option>
+                <option value="fukui">福井</option>
+                <option value="yamanashi">山梨</option>
+                <option value="nagano">長野</option>
+                <option value="gifu">岐阜</option>
+                <option value="shizuoka">静岡</option>
+                <option value="aichi">愛知</option>
+                <option value="mie">三重</option>
+                <option value="shiga">滋賀</option>
+                <option value="kyoto">京都</option>
+                <option value="osaka">大阪</option>
+                <option value="hyogo">兵庫</option>
+                <option value="nara">奈良</option>
+                <option value="wakayama">和歌山</option>
+                <option value="tottori">鳥取</option>
+                <option value="shimane">島根</option>
+                <option value="okayama">岡山</option>
+                <option value="hiroshima">広島</option>
+                <option value="yamaguchi">山口</option>
+                <option value="tokushima">徳島</option>
+                <option value="kagawa">香川</option>
+                <option value="ehime">愛媛</option>
+                <option value="kochi">高知</option>
+                <option value="fukuoka">福岡</option>
+                <option value="saga">佐賀</option>
+                <option value="nagasaki">長崎</option>
+                <option value="kumamoto">熊本</option>
+                <option value="oita">大分</option>
+                <option value="miyazaki">宮崎</option>
+                <option value="kagoshima">鹿児島</option>
+                <option value="okinawa">沖縄</option>
+            </select>
+        </div>
+        <div>
+            <h3>欲しい情報を選択</h3>
+            <div class="py-3">
+                <h4>基本情報</h4>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_hotel_number" id="hotel_number" value="1">
+                    <label class="form-check-label" for="hotel_number">ホテル番号</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_hotel_special" id="hotel_special" value="1">
+                    <label class="form-check-label" for="hotel_special">ホテル説明</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_hotel_latitude" id="latitude" value="1">
+                    <label class="form-check-label" for="latitude">緯度</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_hotel_longitude" id="longitude" value="1">
+                    <label class="form-check-label" for="longitude">経度</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_hotel_postal_code" id="postal_code" value="1">
+                    <label class="form-check-label" for="postal_code">郵便番号</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_hotel_address" id="address" value="1">
+                    <label class="form-check-label" for="address">住所</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_hotel_telephone" id="hotel_telephone" value="1">
+                    <label class="form-check-label" for="hotel_telephone">電話番号</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_hotel_fax" id="fax" value="1">
+                    <label class="form-check-label" for="fax">FAX</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_hotel_access" id="access" value="1">
+                    <label class="form-check-label" for="access">アクセス</label>
+                </div>  
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_hotel_parking" id="parking" value="1">
+                    <label class="form-check-label" for="parking">駐車場</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_hotel_station" id="station" value="1">
+                    <label class="form-check-label" for="station">最寄り駅</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_review_count" id="review_count" value="1">
+                    <label class="form-check-label" for="review_count">レビュー件数</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_reviews" id="reviews" value="1">
+                    <label class="form-check-label" for="reviews">評価</label>
+                </div>
+            </div>
+            <div class="py-3">
+                <h4>ホテル詳細</h4>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_reserve_telephone" id="reserve_telephone" value="1">
+                    <label class="form-check-label" for="reserve_telephone">予約センター電話番号</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_area_name" id="area_name" value="1">
+                    <label class="form-check-label" for="area_name">エリア</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_hotel_class_code" id="hotel_class_code" value="1">
+                    <label class="form-check-label" for="hotel_class_code">ホテルクラスコード</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_check_time" id="check_time" value="1">
+                    <label class="form-check-label" for="check_time">チェックタイム</label>
+                </div>
+            </div>
+            <div class="py-3">
+                <h4>ホテル施設詳細</h4>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_hotel_room_num" id="hotel_room_num" value="1">
+                    <label class="form-check-label" for="hotel_room_num">部屋数</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_room_facilities" id="room_facilities" value="1">
+                    <label class="form-check-label" for="room_facilities">部屋設備・備品</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_all_hotel_facilities" id="all_hotel_facilities" value="1">
+                    <label class="form-check-label" for="all_hotel_facilities">館内設備</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_about_leisure" id="about_leisure" value="1">
+                    <label class="form-check-label" for="about_leisure">レジャー施設</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_handicapped_facilities" id="handicapped_facilities" value="1">
+                    <label class="form-check-label" for="handicapped_facilities">身体障害者設備</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_handicapped_facilities" id="handicapped_facilities" value="1">
+                    <label class="form-check-label" for="handicapped_facilities">身体障害者設備</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_linguistic_level" id="linguistic_level" value="1">
+                    <label class="form-check-label" for="linguistic_level">身体障害者設備</label>
+                </div>
+            </div>
+            <div class="py-3">
+                <h4>宿泊・決済関連</h4>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_note" id="note" value="1">
+                    <label class="form-check-label" for="note">条件・注意事項・備考</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_cancel_policy" id="cancel_policy" value="1">
+                    <label class="form-check-label" for="cancel_policy">キャンセルルール</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_credit_card" id="credit_card" value="1">
+                    <label class="form-check-label" for="credit_card">クレジットカード</label>
+                </div>
+            </div>
+            <div class="py-3">
+                <h4>特典</h4>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="get_privilege" id="privilege" value="1">
+                    <label class="form-check-label" for="privilege">特典</label>
+                </div>
+            </div>
+        </div>
+        
+        <input type="submit" value="検索" class="btn btn-danger mt-4">
+    </form>
+{% endblock %}
+
