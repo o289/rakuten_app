@@ -1,14 +1,14 @@
 {% extends "nav.html" %}
 
 {% block content %}
+    <h2 class="text-center my-3">ゴルフ場検索</h2>
     <form action="/search_golf" method="post" class="d-block w-75 mx-auto">
-        <h2 class="text-center">ゴルフ場検索</h2>
-        <div class="form-group">
+        <div class="form-group mt-5">
             <label for="text">ゴルフ場</label>
             <input type="text" name="golf_course" id="text" class="form-control" placeholder="ゴルフ場を入力してください">
         </div>
         
-        <div class="form-group">
+        <div class="form-group mt-5">
             <label for="prefectures">都道府県</label>
             <select  name="prefectures" id="prefectures" class="form-control">
                 <option value="0" selected>全地域</option>
@@ -71,7 +71,7 @@
             </select>
         </div>        
 
-        <div class="form-group">
+        <div class="form-group mt-5">
             <label for="want">取得ゴルフ場</label>
             <select class="form-control" id="want" name="want_golf">
                 <option value="1" selected >1件</option>
@@ -83,7 +83,7 @@
             </select>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mt-5">
             <label for="exampleFormControlSelect1">ソート</label>
             <select class="form-control" id="exampleFormControlSelect1" name="golf_sort">
                 <option value="rating">口コミ順</option>

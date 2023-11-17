@@ -1,13 +1,13 @@
 {% extends "nav.html" %}
 
 {% block content %}
-    <h2 class="text-center">ホテル検索</h2>
+    <h2 class="text-center my-3">ホテル検索</h2>
     <form action="/search_hotel" method="post" class="d-block w-75 mx-auto">
-        <div class="form-group">
-            <label for="keyword">ホテル名</label>
+        <div class="form-group mt-2">
+            <label for="keyword">ホテル名<span class="text-danger">入力必須</span></label>
             <input type="text" name="keyword" id="keyword" placeholder="ホテル名を入力" class="form-control" required>
         </div>
-        <div class="form-group">
+        <div class="form-group mt-2">
             <label for="hotel_sort"">ソート</label>
             <select name="hotel_sort" id="hotel_sort" class="form-control" >
                 <option value="standard" selected>デフォルト</option>
@@ -15,14 +15,14 @@
                 <option value="-roomCharge">値段が高い順</option>
             </select>
         </div>
-        <div class="form-group">
+        <div class="form-group mt-2">
             <label for="review">得点表記方式</label>
             <select name="review" id="review" class="form-control">
                 <option value="0" selected>数字(小数点を表示)</option>
                 <option value="1">星5(小数点は四捨五入)</option>
             </select>
         </div>
-        <div class="form-group">
+        <div class="form-group mt-2">
             <label for="want">取得ホテル数</label>
             <select class="form-control" id="want" name="want_hotel">
                 <option value="1" selected >1件</option>
@@ -33,7 +33,7 @@
                 <option value="30">30件</option>
             </select>
         </div>
-        <div class="form-group">
+        <div class="form-group mt-2">
             <label for="prefecture">都道府県選択:</label>
             <select id="prefecture" name="prefecture" class="form-control">
                 <option value="hokkaido">北海道</option>

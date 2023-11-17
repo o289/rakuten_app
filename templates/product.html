@@ -1,21 +1,21 @@
 {% extends "nav.html" %}
 
 {% block content %}
+    <h2 class="text-center my-3">商品検索</h2>
     <form action="/search_product" method="post" class="d-block w-75 mx-auto">
-        <h2 class="text-center">商品検索</h2>
-        <div class="form-group">
-            <label for="text">商品(入力必須)</label>
+        <div class="form-group mt-3">
+            <label for="text">商品<span class="text-danger">入力必須</span></label>
             <input type="text" name="product" id="text" class="form-control" placeholder="探したい商品を入力してください"  required >
         </div>
         <div class="row">
             <div class="col">
-                <div class="form-group">
+                <div class="form-group mt-3">
                     <label for="max">最大価格</label>
                     <input type="number" name="max_price" id="max" class="form-control" placeholder="最大価格を入力してください" value="100000000">
                 </div>        
             </div>
             <div class="col">
-                <div class="form-group">
+                <div class="form-group mt-3">
                     <label for="min">最小価格</label>
                     <input type="number" name="min_price" id="min" class="form-control" placeholder="最小価格を入力してください" value="1">
                 </div>
@@ -23,7 +23,7 @@
         </div>
         
 
-        <div class="form-group">
+        <div class="form-group mt-3">
             <label for="want">取得商品数</label>
             <select class="form-control" id="want" name="want_product">
                 <option value="1" selected >1件</option>
@@ -35,7 +35,7 @@
             </select>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mt-3">
             <label for="exampleFormControlSelect1">ソート</label>
             <select class="form-control" id="exampleFormControlSelect1" name="product_sort">
                 <option value="standard" selected>デフォルト</option>
@@ -47,7 +47,7 @@
             </select>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mt-3">
             <label for="postage" id="postage">送料</label>
             <select class="form-control" id="postage" name="postage">
                 <option value="0" selected >全ての商品</option>
@@ -55,7 +55,7 @@
             </select>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mt-3">
             <label for="purchase_type">購入種別</label>
             <select class="form-control" id="purchase_type" name="purchase_type">
                 <option value="0" selected >通常購入</option>

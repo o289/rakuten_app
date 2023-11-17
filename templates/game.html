@@ -1,13 +1,14 @@
 {% extends "nav.html" %}
 
 {% block content %}
+    <h2 class="text-center my-3">ゲーム検索</h2>
     <form action="/search_game" method="post" class="d-block w-75 mx-auto">
-        <div class="form-group">
-            <label for="text">ゲーム(入力必須)</label>
+        <div class="form-group mt-5">
+            <label for="text">ゲーム<span class="text-danger">入力必須</span></label>
             <input type="text" name="game" id="text" class="form-control" placeholder="探したいゲームを入力してください"  required>
         </div>
         
-        <div class="form-group">
+        <div class="form-group mt-5">
             <label for="want">取得ゲーム数</label>
             <select class="form-control" id="want" name="want_game">
                 <option value="1" selected >1件</option>
@@ -19,7 +20,7 @@
             </select>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mt-5">
             <label for="availability">在庫状況</label>
             <select class="form-control" id="availability" name="availability_game">
                 <option value="0" selected >全て</option>
@@ -30,7 +31,7 @@
             </select>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mt-5">
             <label for="exampleFormControlSelect1">ソート</label>
             <select class="form-control" id="exampleFormControlSelect1" name="game_sort">
                 <option value="standard" selected>デフォルト</option>
@@ -44,7 +45,7 @@
         </div>
 
         
-        <div>
+        <div class="mt-5">
             <h4>欲しい情報を選択</h4>
             <div class="form-check form-check-inline">
                 <input class="form-check-input" type="checkbox" name="get_item_caption" id="inlineRadio8" value="1">
