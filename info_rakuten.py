@@ -1228,7 +1228,7 @@ def hotel_search():
 
                 if get_privilege == '1':
                     privilege = other_info['privilege']            
-                    if privilege is not None:
+                    if privilege is None or privilege == '':
                         privilege = 'なし'
                     else: 
                         privilege = privilege
